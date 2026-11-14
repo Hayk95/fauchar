@@ -190,3 +190,33 @@ test("generated crown remains editable, undoable and restorable after reopening"
   assert.equal(initialStep(reopened), "review");
   assert.ok(reopened.crown.weights.weight.some(v => v > 0));
 });
+
+test("all original morphology styles change only the outer shape and preserve closed topology", async () => {
+  const { ANATOMY_STYLES, morphologyForTooth, anatomyHeight } = await import("../lib/client/cad/anatomy-library.js");
+  assert.equal(morphologyForTooth(46), "lower-molar");
+  assert.equal(morphologyForTooth(16), "upper-molar");
+  const shapes = [];
+  let baseline;
+  for (const anatomyStyle of Object.keys(ANATOMY_STYLES)) {
+    const result = createCrown({ ...payload, anatomyStyle, segments: 48, rings: 12 });
+    assert.equal(result.stats.closed, true); assert.equal(result.stats.degenerate, 0);
+    const inner = [...result.seg.intaglio].flatMap((yes,i) => yes ? [...result.positions.slice(i*3,i*3+3)] : []);
+    if (baseline) assert.deepEqual(inner, baseline); else baseline = inner;
+    shapes.push([...result.positions].join(","));
+    for (const fdi of [11, 13, 14, 16, 36, 46]) assert.ok(Number.isFinite(anatomyHeight(fdi, anatomyStyle, .2, -.3)));
+  }
+  assert.equal(new Set(shapes).size, 4, "styles change the actual generated mesh");
+  assert.throws(() => createCrown({ ...payload, anatomyStyle: "unknown" }), /anatomy style/);
+});
+
+test("user library validates actual STL geometry and rejects unsafe imports", async () => {
+  const { validateLibraryMesh } = await import("../lib/client/cad/restoration-library.js");
+  const crown = createCrown({ ...payload, segments: 48, rings: 12 });
+  const buffer = writeBinarySTL([crown], "User library test");
+  const result = validateLibraryMesh(buffer);
+  assert.equal(result.stats.closed, true);
+  assert.throws(() => validateLibraryMesh(new ArrayBuffer(21*1024*1024)), /20 MB/);
+  assert.throws(() => validateLibraryMesh(new ArrayBuffer(0)));
+  const open = writeBinarySTL([{ positions: new Float32Array([0,0,0,1,0,0,0,1,0]), indices: new Uint32Array([0,1,2]) }]);
+  assert.throws(() => validateLibraryMesh(open), /closed/);
+});

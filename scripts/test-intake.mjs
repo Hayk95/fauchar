@@ -150,3 +150,36 @@ test("DentalDB tooth dialog commits only on OK and leaves cancelled settings unt
     assert.equal(h.intake.flow.job.units.length, 0);
   } finally { h.intake.dispose(); }
 });
+
+test("reference catalog includes every pictured group and shade/slider choices reach the saved job", () => {
+  const h = harness();
+  try {
+    h.click('[data-tooth="46"]');
+    assert.equal(h.view.querySelectorAll('[data-indication]').length, 28);
+    assert.equal(h.view.querySelectorAll('[data-material]').length, 13);
+    assert.ok(h.view.querySelector('[data-indication="barSegment"]').disabled);
+    h.click('[data-shade="B2"]');
+    const slider = h.view.querySelector('[data-modal-parameter="cementGap"]');
+    slider.value = "0.09"; slider.dispatchEvent(new h.window.Event("input", { bubbles: true }));
+    assert.match(h.view.querySelector('[data-parameter-output="cementGap"]').textContent, /0.09/);
+    h.click('[data-material="Titanium"]');
+    h.click('[data-action="apply-unit"]');
+    assert.equal(h.intake.flow.job.units[0].shade, "B2");
+    assert.equal(h.intake.flow.job.units[0].material, "Titanium");
+    assert.equal(h.intake.flow.job.parameters.cementGap, .09);
+  } finally { h.intake.dispose(); }
+});
+
+test("library and morphology panels render through the real editor with valid toolbar shortcuts", async () => {
+  const { renderPanel, TOOLS } = await import("../lib/client/cad/panel.js");
+  assert.equal(new Set(TOOLS.map(t => t.key)).size, TOOLS.length);
+  assert.ok(TOOLS.every(t => typeof t.key === "string" && t.key.length === 1));
+  const { document } = parseHTML('<div id="panel"></div>');
+  const ed = new CadEditor({ viewer: {}, caseData: { teeth: [46] }, io: {} });
+  ed.panelEl = document.getElementById("panel");
+  ed.tool = "library"; renderPanel(ed);
+  assert.ok(ed.panelEl.querySelector("[data-library-import]"));
+  ed.tool = "construction"; renderPanel(ed);
+  assert.equal(ed.panelEl.querySelectorAll("[data-anatomy-style]").length, 4);
+  ed.kernel.dispose(); clearTimeout(ed.saveTimer);
+});

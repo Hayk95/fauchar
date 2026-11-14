@@ -48,6 +48,29 @@ manufacturer material libraries or CAM output. Explicit cement/wall parameters
 are passed to the real editor and remain editable there. The single-crown wizard
 skips the connector stage; bridge jobs retain it. Existing cases stay readable.
 
+## Libraries and reference catalog
+
+The expanded tooth dialog contains all 28 indication entries from the supplied
+reference frames, 13 planning materials with original SVG art, shade chips,
+live cement/minimal-wall sliders and the pictured option sections. Disabled
+engines are visibly unavailable. Material choice does not silently install
+manufacturer production presets.
+
+Crown bottom offers four original parametric morphology styles. Their preview
+and generated relief use the same FDI-aware function, with separate anterior,
+premolar and upper/lower molar structure. The inner geometry is unchanged by
+style selection. Construction settings and source metadata survive design save.
+
+The CAD Library tool (L) adds/reloads user-owned binary restoration STLs in
+browser IndexedDB and imports a selected model into the actual editor. Catalog
+metadata is stored separately from geometry to avoid loading every mesh merely
+to list models. Files must be closed, non-degenerate, positive-volume meshes,
+up to 20 MB / 100,000 triangles. Original coordinates are preserved: manual
+placement and fit assessment are required. The library is local to this browser.
+
+See [reference and readiness](EXOCAD_REFERENCE_AND_READINESS.md) for AI research,
+asset-license findings and concrete missing production capabilities.
+
 ## Margin usability
 
 - Empty margin opens in Trace mode on the job's prepared tooth. Opening the tool

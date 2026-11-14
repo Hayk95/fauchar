@@ -230,30 +230,39 @@ html[data-dental-intake] .shell { inset: 0; grid-template-columns: minmax(0, 1fr
 .job-scan-slot p { font-size: 12px; }.job-file { background: #e2dbe9; padding: 10px; border-radius: 3px; overflow-wrap: anywhere; }
 .job-file p { margin: 5px 0 9px; }.job-import-options { margin-top: 18px; }.job-import-options .field { max-width: 260px; }
 .job-review-table { overflow-x: auto; }.job-review-table .table { color: #332a3d; }
-.db-tooth-dialog { width: min(880px, calc(100vw - 40px)); max-height: calc(100dvh - 40px); padding: 0; color: #2e2736; background: #e9e6ee; border: 1px solid #8a7b97; border-radius: 5px; box-shadow: 0 16px 70px #241b354f; font: 12px Arial, sans-serif; overflow-y: auto; }
-.db-tooth-dialog::backdrop { background: #27203066; }
-.db-dialog-title { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: linear-gradient(#f5f2f8, #d3cadf); border-bottom: 1px solid #b2a4bf; }
-.db-dialog-title h2 { font: 500 15px Arial, sans-serif; }.db-dialog-title .btn { border: 0; background: transparent; min-width: 28px; font-size: 18px; }
-.db-dialog-columns { display: grid; grid-template-columns: 1.2fr .9fr 1fr; }
-.db-dialog-columns > section { padding: 14px; min-width: 0; }.db-dialog-columns > section + section { border-left: 1px solid #c0b5cb; }
-.db-dialog-columns h3 { margin: 0 0 10px; font: 500 12px Arial, sans-serif; }
-.db-dialog-columns h3:not(:first-child) { margin-top: 20px; }
-.db-indication-list { display: grid; gap: 3px; }.db-indication-list h4 { margin: 9px 0 4px; font: 500 11px Arial, sans-serif; color: #766784; }
+.db-tooth-dialog { width: calc(100vw - 28px); max-width: 1560px; height: calc(100dvh - 28px); max-height: none; padding: 0; color: #797785; background: #fafafa; border: 1px solid #ddd; border-radius: 0; box-shadow: 0 16px 70px #241b354f; font: 12px Arial, sans-serif; overflow: auto; }
+.db-tooth-dialog::backdrop { background: #27203088; }
+.db-dialog-title { display: flex; gap: 12px; align-items: center; padding: 14px 20px; background: #fafafa; }
+.db-dialog-title h2 { margin: 0; font: 300 27px Arial, sans-serif; }.db-dialog-title > span { font-size: 11px; color: #96959a; }.db-dialog-title .btn { margin-left: auto; border: 0; background: transparent; min-width: 28px; font-size: 20px; }
+.db-dialog-columns { display: grid; grid-template-columns: minmax(350px, 1.25fr) minmax(190px, .58fr) minmax(330px, 1.2fr); min-height: calc(100% - 118px); }
+.db-dialog-columns > section { padding: 0 18px 14px; min-width: 0; }.db-dialog-columns > section + section { border-left: 1px solid #e0dfe2; }
+.db-dialog-columns h3 { margin: 0 0 12px; color: #93919f; font: 300 27px Arial, sans-serif; }
+.db-dialog-columns h4 { margin: 10px 0 5px; color: #959396; font: 400 12px Arial, sans-serif; }
 .db-indication-list h4:first-child { margin-top: 0; }
-.db-indication-list button, .db-material-list button { display: flex; align-items: center; gap: 8px; text-align: left; padding: 8px; min-height: 32px; border: 1px solid transparent; border-radius: 3px; background: transparent; color: #46394f; font: 12px Arial, sans-serif; }
-.db-indication-list button { flex-wrap: wrap; }.db-indication-list button small { width: 100%; padding-left: 17px; font-size: 10px; color: #887a94; }
-.db-indication-list button[aria-pressed="true"], .db-material-list button[aria-pressed="true"] { background: #d3c2e3; border-color: #ac95bf; color: #3c294f; }
-.db-material-list { display: grid; gap: 4px; }.db-material-list button { border-color: #c4b8cf; background: linear-gradient(#fcfaff, #e0d9e9); }
-.db-dialog-columns select.select { margin-bottom: 10px; }
-.db-implant-options { margin: 17px 0; border: 1px solid #c2b8cc; padding: 9px; display: grid; gap: 9px; opacity: .6; }
-.db-implant-options legend { padding: 0 5px; }.db-implant-options label { display: flex; gap: 5px; }.db-implant-options small { font-size: 10px; color: #776783; }
-.db-extra-options { display: grid; gap: 12px; margin: 18px 0; }.db-extra-options label { display: flex; align-items: center; gap: 7px; }
-.db-tooth-dialog input[type="checkbox"] { accent-color: #9272ae; }
-.db-dialog-parameters { border-top: 1px solid #c4b7d1; padding-top: 12px; font-size: 11px; }
-.db-dialog-parameters summary { cursor: pointer; }.db-dialog-parameters label { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 10px; }
-.db-dialog-parameters input { width: 65px; margin-left: auto; background: #fff; border: 1px solid #a99bb5; padding: 4px; color: #32263e; }
-.db-tooth-dialog footer { display: flex; justify-content: flex-end; gap: 8px; padding: 10px 14px; border-top: 1px solid #bdb0c9; background: #ddd4e7; }
-.db-tooth-dialog footer .btn { min-width: 78px; }.db-tooth-dialog footer .btn:first-child { margin-right: auto; }
+.db-type-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+.db-type-grid button { position: relative; display: flex; align-items: center; gap: 5px; min-height: 37px; padding: 4px 5px; border: 2px solid transparent; border-radius: 0; text-align: left; font: 600 10px Arial, sans-serif; color: #fff; background: var(--indication-color); cursor: pointer; }
+.db-type-grid button:disabled { opacity: .68; cursor: not-allowed; }
+.db-type-grid button svg { width: 23px; height: 27px; flex-shrink: 0; }
+.db-type-grid button[aria-pressed="true"], .db-material-list button[aria-pressed="true"], .db-shade-grid button[aria-pressed="true"] { outline: 2px solid #df9e75; outline-offset: -2px; }
+.db-type-grid button[aria-pressed="true"]:after, .db-material-list button[aria-pressed="true"]:after { content: "✓"; position: absolute; right: 2px; top: 1px; color: #d98e60; background: #fff; font-size: 12px; }
+.db-module-mark { position: absolute; right: 1px; top: 0; font-size: 9px; }
+.db-material-list { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; }
+.db-material-list button { position: relative; min-width: 0; padding: 2px 3px 5px; border: 1px solid #e0dfdf; border-radius: 0; background: linear-gradient(#fff,#f1f2f1); color: #68676a; text-align: left; font: 600 10px Arial,sans-serif; cursor: pointer; }
+.db-material-list button svg { display: block; width: 100%; max-height: 105px; }.db-material-list button span { display: block; }
+.db-dialog-columns select.select { width: 100%; margin-bottom: 9px; min-height: 25px; font-size: 11px; background: #fff; }
+.db-implant-options { margin: 0; padding: 0; border: 0; }.db-implant-options legend { margin: 0 0 4px; padding: 0; }.db-implant-options small { display: block; font-size: 9px; color: #aaa; margin-top: 4px; }
+.db-option-tiles { display: flex; flex-wrap: wrap; gap: 5px; }
+.db-option-tiles button, .db-option-tiles label, .db-fixed-option { flex: 1 1 100px; padding: 7px; border: 1px solid #ddd; border-radius: 0; background: var(--option-color,#eee); color: #fff; font: 600 10px Arial,sans-serif; text-align: left; }
+.db-option-tiles button:disabled { color: #84818d; opacity: .65; cursor: not-allowed; }.db-implant-options button:disabled { color: #fff; }
+.db-extra-options label { display: flex; gap: 5px; align-items: center; cursor: pointer; }.db-extra-options input { margin: 0; accent-color: #735183; }
+.db-fixed-option { background: #bc80ad; }
+.db-primary-parameters label { display: grid; grid-template-columns: 1fr auto; gap: 5px; margin-top: 12px; }.db-primary-parameters output { font-size: 10px; color: #9a99a0; }.db-primary-parameters input { grid-column: 1 / -1; width: 100%; height: 14px; accent-color: #db9b75; }
+.db-dialog-parameters { border-top: 1px solid #e1dfe5; margin: 12px 0; padding-top: 12px; font-size: 11px; }
+.db-dialog-parameters summary { cursor: pointer; color: #d0926b; }.db-dialog-parameters label { display: flex; align-items: center; gap: 4px; margin-top: 10px; }.db-dialog-parameters input { width: 65px; margin-left: auto; background: #fff; border: 1px solid #bbb; padding: 4px; color: #32263e; }
+.db-shade-grid { display: grid; grid-template-columns: repeat(8,minmax(0,1fr)); gap: 4px; }.db-shade-grid button { position: relative; min-height: 28px; padding: 2px; border: 1px solid #e4ded4; border-radius: 0; background: var(--shade-color); color: #857b6c; font: 10px Arial,sans-serif; cursor: pointer; }
+.db-custom-shade { margin-top: 10px; max-width: 180px; }.db-custom-shade input { min-height: 27px; }
+.db-tooth-dialog footer { position: sticky; bottom: 0; display: flex; justify-content: flex-end; gap: 10px; padding: 10px 20px; background: #fafafa; border-top: 1px solid #eee; }
+.db-tooth-dialog footer .btn { min-width: 100px; border-radius: 0; }.db-tooth-dialog footer .btn:first-child { margin-right: auto; }
 @media (max-width: 1000px) {
   .db-workbench { grid-template-columns: 235px minmax(0, 1fr) 82px; }
   .db-chart-region { padding: 0 8px 10px; }.db-chart-center { font-size: 10px; }
@@ -273,3 +282,10 @@ html[data-dental-intake] .shell { inset: 0; grid-template-columns: minmax(0, 1fr
   .job-scan-grid { grid-template-columns: minmax(0, 1fr); }.db-bottom-bar { align-items: flex-start; flex-direction: column; }
   .db-import-page { padding: 12px; }
 }
+
+.cad-anatomy-library { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; margin: 10px 0; }
+.cad-anatomy-library button { min-width: 0; border: 1px solid #b7afc2; border-radius: 4px; color: #514460; background: #e5dfed; padding: 5px; cursor: pointer; }
+.cad-anatomy-library button[aria-pressed="true"] { border: 2px solid #9e6fb8; background: #d6c6e3; }
+.cad-anatomy-library svg { display: block; height: 70px; width: 100%; }.cad-anatomy-library span { font-size: 11px; }
+
+.cad-user-library { display: grid; gap: 6px; margin-top: 10px; }.cad-user-library button { display: grid; gap: 4px; padding: 10px; text-align: left; border: 1px solid #baadc6; border-radius: 4px; color: #514460; background: #eee8f4; cursor: pointer; }.cad-user-library small { font-size: 10px; }
