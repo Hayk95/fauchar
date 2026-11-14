@@ -119,3 +119,34 @@ test("actual bridge picker assigns abutments, pontics and connectors before requ
     assert.ok(h.view.querySelector('[data-drop-slot="gingiva"]'));
   } finally { h.intake.dispose(); }
 });
+
+
+test("DentalDB tooth dialog commits only on OK and leaves cancelled settings untouched", () => {
+  const h = harness();
+  try {
+    assert.equal(h.view.querySelectorAll("[data-tooth]").length, 32);
+    const before = JSON.stringify(h.intake.flow.job);
+    h.click('[data-tooth="21"]');
+    assert.ok(h.view.querySelector("dialog[open]"));
+    assert.equal(h.view.querySelectorAll(".db-dialog-columns > section").length, 3);
+    h.click('[data-material="PMMA"]');
+    const preop = h.view.querySelector('[data-option="preop"]');
+    preop.checked = true; preop.dispatchEvent(new h.window.Event("change", { bubbles: true }));
+    const wall = h.view.querySelector('[data-modal-parameter="minWall"]');
+    wall.value = "1.2"; wall.dispatchEvent(new h.window.Event("input", { bubbles: true }));
+    h.click('[data-action="cancel-unit"]');
+    assert.equal(JSON.stringify(h.intake.flow.job), before);
+    assert.equal(h.view.querySelector("dialog"), null);
+    h.click('[data-tooth="21"]');
+    h.click('[data-material="PMMA"]');
+    const option = h.view.querySelector('[data-option="preop"]');
+    option.checked = true; option.dispatchEvent(new h.window.Event("change", { bubbles: true }));
+    h.click('[data-action="apply-unit"]');
+    assert.equal(h.intake.flow.job.units.find(u => u.fdi === 21).material, "PMMA");
+    assert.equal(h.intake.flow.job.preop, true);
+    assert.equal(h.view.querySelector("dialog"), null);
+    assert.equal(scanPlan(h.intake.flow.job).find(s => s.id === "preop").required, true);
+    h.click('[data-tooth="21"]'); h.click('[data-action="clear-unit"]');
+    assert.equal(h.intake.flow.job.units.length, 0);
+  } finally { h.intake.dispose(); }
+});

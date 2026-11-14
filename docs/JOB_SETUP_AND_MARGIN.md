@@ -7,7 +7,10 @@ is a dental design work order, not a scheduled calendar event.
 
 1. Enter a job name, client/laboratory, patient reference, technician and optional
    due date. Choose the scan mode, planning material/shade and production method.
-2. Click an FDI tooth and assign its indication, material and shade. The crown
+2. Click an FDI tooth in the curved upper/lower arch chart. A three-column dialog
+   provides restoration type, production/material and scan/design options. OK
+   commits the settings; Cancel or Escape discards the draft. Assign its indication,
+   material and shade. The crown
    shortcut assigns one prepared tooth. The bridge shortcut takes two end teeth,
    assigns crown abutments at the ends and pontics between them, and creates
    editable connector toggles. Per-tooth adjacent and antagonist roles are also
@@ -77,10 +80,18 @@ a development-only DOM test dependency; it is not loaded by the web application.
 short draft preservation, cancellation, seed selection, line dragging, occluded
 handle selection, camera modifiers and wizard gating.
 
-These are DOM/model and geometry checks, not browser visual QA. Managed preview
-remains unavailable because of the previously observed `uv_interface_addresses`
-host error. Desktop visual layout, pointer feel, touch gestures and real browser
-file/worker behavior still require browser verification before merging.
+The job page uses the DentalDB desktop arrangement: Project fields and preview
+status on the left, curved FDI arches in the center, and an Actions rail on the
+right. Tooth symbols are original lightweight SVGs. Unimplemented modules remain
+disabled and labeled rather than opening a placeholder design.
+
+The desktop layout and tooth-dialog apply interaction were checked in Chromium
+using an isolated static harness loading the actual intake JS/CSS. That harness
+mocks file parsing and persistence, so it does not validate the real upload,
+IndexedDB, worker or WebGL integration. The full Next managed preview still
+encounters the previously observed `uv_interface_addresses` host error. Touch
+gestures and full browser file/worker behavior need verification before merging.
+The intake DOM suite also checks modal cancellation, commit and scan-option state.
 
 Primary behavior references:
 

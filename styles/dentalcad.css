@@ -115,81 +115,161 @@ html[data-dental-session] .topnav, html[data-dental-session] .ws-select { displa
   .dental-cad .vp-views { flex-wrap: wrap; left: 8px; right: 8px; }
 }
 
-/* Dental job definition, before any scan is imported or WebGL is opened. */
-.job-intake {
-  --bg: #e4e4e7; --bg-2: #d7d7dc; --panel: #f4f4f5; --panel-2: #dddde1;
-  --text: #25232a; --dim: #55515c; --faint: #655f6c; --white: #25232a;
-  --line: #c6c3cb; --line-2: #a5a0ad; --hover: #e4e0e9; --lime: #edb255;
-  --charcoal: #292019; --r: 4px;
-  background: #e4e4e7; color: #25232a; color-scheme: light; min-height: 100%;
-  font-family: Arial, sans-serif;
+
+/* Desktop DentalDB-style project window. The arch is original SVG geometry. */
+html[data-dental-intake] .topbar, html[data-dental-intake] .sidebar { display: none; }
+html[data-dental-intake] .shell { inset: 0; grid-template-columns: minmax(0, 1fr); }
+.job-intake.dentaldb-intake {
+  --bg: #e5e5e8; --bg-2: #d8d8dc; --panel: #eeeef0; --panel-2: #dddde1;
+  --text: #28252d; --dim: #57515f; --faint: #655d6e; --white: #25222a;
+  --line: #bdbac3; --line-2: #9c96a5; --hover: #e0dbe6;
+  --lime: #efbc69; --charcoal: #2b241b; --r: 3px;
+  font: 400 12px/1.4 Arial, sans-serif; color: #28252d; color-scheme: light;
+  width: 100%; max-width: none; margin: 0; padding: 0; min-height: 100%;
+  background: #e2e2e5;
 }
-.job-intake .panel { background: #f4f4f5; }
-.job-intake .panel-head { background: linear-gradient(#fefefe, #e1dfe5); }
-.job-intake .field input, .job-intake .field select, .job-intake .field textarea { background: #fff; color: #25232a; border-color: #aaa4b2; }
-.job-intake .btn { background: linear-gradient(#fff, #dfdde3); color: #302a38; border: 1px solid #aaa1b4; }
-.job-intake .btn-primary { background: linear-gradient(#ffe0a5, #e5ad51); color: #302513; border-color: #b48d4e; }
-.job-intake .btn:disabled { opacity: .5; }
-.job-intake .stepper { background: #d5d1da; border: 1px solid #bab2c5; border-radius: 4px; padding: 12px; margin-bottom: 18px; }
-.job-intake .stepper li[aria-current="step"] { color: #49305d; }
-.job-intake .stepper .n { background: #eee9f5; color: #49305d; }
-.job-intake .banner-warn { color: #704e15; background: #fff0d4; border-color: #dfbf86; }
-.job-definition { display: grid; grid-template-columns: 215px minmax(350px, 1fr) 250px; gap: 14px; align-items: start; }
-.job-definition .panel-body.stack { gap: 12px; }
-.job-definition .field { gap: 5px; font-size: 12px; }
-.job-definition .panel-title { font-size: 13px; }
-.job-hint { color: #62596c; font-size: 12px; line-height: 1.5; margin: 8px 0 12px; }
-.job-quick { display: flex; flex-wrap: wrap; gap: 7px; }
-.job-arch-label { color: #64576f; font-size: 11px; margin: 18px 0 8px; text-align: center; }
-.job-tooth-row { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 3px; }
-.job-tooth { --job-role: #b2aeb9; display: grid; gap: 5px; justify-items: center; border: 1px solid #ccc6d3; background: #f7f6f9; border-radius: 4px; padding: 6px 1px; color: #333039; min-width: 0; }
-.job-tooth:hover { background: #f6ead5; }
-.job-tooth[aria-pressed="true"] { outline: 2px solid #c48a34; outline-offset: 1px; }
-.job-tooth strong { font-size: 11px; font-weight: 500; }
-.job-tooth small { font-size: 9px; max-width: 100%; overflow: hidden; }
-.job-tooth-shape { width: 15px; height: 24px; border-radius: 8px 8px 6px 6px; background: var(--job-role); box-shadow: inset 2px 1px 2px #ffffff88, inset -2px -2px 2px #00000022; }
-.job-intake .role-crown { --job-role: #589bcd; }
-.job-intake .role-pontic { --job-role: #e0a04b; }
-.job-intake .role-adjacent { --job-role: #949a9c; }
-.job-intake .role-antagonist { --job-role: #a486bd; }
-.job-legend { display: flex; flex-wrap: wrap; gap: 7px 12px; margin: 16px 0; font-size: 11px; }
-.job-legend span { display: flex; gap: 5px; align-items: center; }
-.job-legend span::before { content: ""; width: 9px; height: 9px; border-radius: 2px; background: var(--job-role); }
-.job-connectors { border-top: 1px solid #d1cad9; padding-top: 12px; margin: 12px 0; display: flex; gap: 9px; flex-wrap: wrap; }
-.job-connectors h3 { width: 100%; font-size: 12px; }
-.job-connectors label, .job-extras label { display: flex; gap: 7px; align-items: center; font-size: 12px; }
-.job-intake input[type="checkbox"] { accent-color: #9471ad; }
-.job-extras { border-top: 1px solid #d1cad9; padding-top: 14px; display: grid; gap: 10px; margin: 15px 0; }
-.job-extras h3 { font-size: 12px; }
-.job-parameters { padding: 10px 0; margin: 10px 0; border-top: 1px solid #d1cad9; }
-.job-parameters summary { cursor: pointer; font-size: 12px; }
-.job-parameters label { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 5px 0; }
-.job-parameters input { width: 80px; padding: 5px; border: 1px solid #aaa; background: #fff; color: #222; }
-.job-scan-needs { padding: 4px 12px; }
-.job-scan-needs li { display: grid; gap: 4px; padding: 11px 0; border-bottom: 1px solid #d5cddd; }
-.job-scan-needs li:last-child { border: 0; }
-.job-scan-needs strong { font-size: 12px; font-weight: 500; }
-.job-scan-needs span { font-size: 11px; color: #6a5878; }
-.job-scan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 16px; }
-.job-scan-slot p { font-size: 12px; }
-.job-file { background: #e7e1ec; padding: 10px; border-radius: 4px; overflow-wrap: anywhere; }
-.job-file strong { font-weight: 500; }
-.job-file p { margin: 5px 0 9px; }
-.job-import-options { margin-top: 18px; }
-.job-import-options .field { max-width: 240px; }
-.job-review-table { overflow-x: auto; }
-.job-intake .job-review-table .table { color: #302b38; }
-.job-intake .flow-actions { margin-top: 20px; }
-@media (max-width: 1400px) {
-  .job-definition { grid-template-columns: 205px minmax(0, 1fr); }
-  .job-definition > aside { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .job-tooth-row { grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 5px; }
-  .job-tooth small { font-size: 10px; }
+.dentaldb-intake * { box-sizing: border-box; }
+.dentaldb-intake .field { display: grid; gap: 4px; min-width: 0; }
+.dentaldb-intake .field > span { color: #49414f; font-size: 11px; }
+.dentaldb-intake .field input, .dentaldb-intake .field select, .dentaldb-intake .field textarea,
+.dentaldb-intake select.select { width: 100%; min-width: 0; height: 29px; padding: 4px 7px; border: 1px solid #a8a1b1; border-radius: 2px; background: #fff; color: #29232f; font: 12px Arial, sans-serif; }
+.dentaldb-intake .field textarea { height: 86px; resize: vertical; }
+.dentaldb-intake .btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 29px; padding: 4px 10px; border: 1px solid #aaa3b2; border-radius: 3px; background: linear-gradient(#fff, #dedce2); color: #332b3a; font: 11px Arial, sans-serif; white-space: nowrap; }
+.dentaldb-intake .btn-primary { background: linear-gradient(#baa6cc, #82689c); border-color: #78608c; color: #fff; }
+.dentaldb-intake button:disabled { opacity: .45; cursor: not-allowed; }
+.dentaldb-intake .btn:focus-visible, .dentaldb-intake input:focus-visible, .dentaldb-intake select:focus-visible { outline: 2px solid #8d68ad; outline-offset: 2px; }
+.db-application-bar { display: flex; gap: 12px; align-items: center; min-height: 34px; padding: 7px 14px; color: #eee7f4; background: linear-gradient(#554261, #392c46); border-bottom: 1px solid #2a1b36; }
+.db-brand { font-size: 13px; font-weight: 600; letter-spacing: 2px; }
+.db-job-caption { margin-left: auto; color: #d6c9e2; font-size: 11px; }
+.db-workbench { display: grid; grid-template-columns: clamp(245px, 24vw, 330px) minmax(0, 1fr) 108px; min-width: 0; }
+.db-panel-heading { min-height: 36px; padding: 9px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; background: linear-gradient(#fafafa, #d4d3d8); border-bottom: 1px solid #b5b1bd; }
+.db-panel-heading h2 { font: 600 13px Arial, sans-serif; }
+.db-project { min-width: 0; border-right: 1px solid #b5b0bd; background: #e9e8ec; display: flex; flex-direction: column; }
+.db-project > .db-panel-heading { display: block; padding: 10px; }
+.db-project-tools { display: flex; gap: 3px; margin-top: 9px; }
+.db-project-tools .btn { flex: 1; height: 46px; display: flex; flex-direction: column; padding: 5px 2px; font-size: 10px; min-width: 0; }
+.db-project-tools .ico { width: 19px; height: 19px; color: #746180; }
+.db-project-body { padding: 10px 12px 14px; display: grid; gap: 11px; }
+.db-project-message { color: #706778; font-size: 11px; min-height: 28px; }
+.db-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.db-notes { margin-top: 2px; }
+.db-preview { margin: auto 10px 10px; border: 1px solid #aaa4b2; background: #d5d1db; }
+.db-preview-tabs { display: flex; border-bottom: 1px solid #aaa4b2; font-size: 10px; }
+.db-preview-tabs > * { flex: 1; padding: 7px 3px; text-align: center; font-weight: 400; }
+.db-preview-tabs strong { background: #f0edf4; color: #51405f; }
+.db-preview-tabs span { color: #7b7284; background: #d9d5df; }
+.db-preview-content { min-height: 140px; padding: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 12px; background: radial-gradient(ellipse, #ddd7e6, #bcb3c9); color: #665b72; }
+.db-preview-content .ico { width: 30px; height: 30px; opacity: .55; }
+.db-project-state { display: flex; align-items: center; gap: 5px; padding: 7px 6px; background: #e9e6ee; font-size: 10px; }
+.db-state-dot { width: 7px; height: 7px; border-radius: 50%; background: #64a079; margin-left: 4px; }
+.db-state-dot.pending { background: #bbb4c5; }
+.db-indications { min-width: 0; background: #e5e4e8; }
+.db-patient-mode { font-size: 11px; color: #63576e; padding: 2px 12px; border: 1px solid #b7afc1; border-radius: 3px; background: #eeeaf3; }
+.db-chart-help { padding: 10px 15px; min-height: 42px; color: #6d6277; font-size: 11px; text-align: center; }
+.db-chart-region { padding: 0 18px 10px; min-width: 0; }
+.db-dental-chart { position: relative; width: 100%; max-width: 650px; aspect-ratio: 640 / 550; margin: 0 auto; }
+.db-tooth {
+  --tooth-fill: #cfccd2; --tooth-highlight: #f3f1f5; --tooth-shadow: #99949f;
+  --tooth-border: #8e8698; --tooth-fissure: #8b8494;
+  position: absolute; height: 8.6%; transform: translate(-50%, -50%); padding: 0;
+  border: 0; background: transparent; overflow: visible; color: #53485e; cursor: pointer;
+}
+.db-tooth-svg { width: 100%; height: 100%; overflow: visible; transform: rotate(var(--tooth-rotation)); }
+.db-tooth-outline { stroke: var(--tooth-border); stroke-width: .9; }
+.db-tooth-fissure { fill: none; stroke: var(--tooth-fissure); stroke-width: 1; opacity: .65; }
+.db-tooth-shine { fill: none; stroke: #fff; stroke-width: 1.4; opacity: .55; }
+.db-tooth:hover .db-tooth-outline, .db-tooth[aria-pressed="true"] .db-tooth-outline { stroke: #9066b3; stroke-width: 2.5; }
+.db-tooth:focus-visible { outline: 2px solid #9863bd; outline-offset: 5px; border-radius: 8px; }
+.db-tooth-number { position: absolute; left: 50%; transform: translateX(-50%); font: 11px Arial, sans-serif; }
+.db-tooth.upper .db-tooth-number { top: -17px; }
+.db-tooth.lower .db-tooth-number { bottom: -17px; }
+.db-tooth.role-crown { --tooth-fill: #f5f0de; --tooth-highlight: #fffef6; --tooth-shadow: #c6bc9d; --tooth-border: #988c72; --tooth-fissure: #a79b78; }
+.db-tooth.role-pontic { --tooth-fill: #db7779; --tooth-highlight: #f0b0af; --tooth-shadow: #a14752; --tooth-border: #8d4654; --tooth-fissure: #994650; }
+.db-tooth.role-adjacent { --tooth-fill: #a3a7ac; --tooth-highlight: #d9dde0; --tooth-shadow: #747a83; }
+.db-tooth.role-antagonist { --tooth-fill: #a38cc0; --tooth-highlight: #d3c4e7; --tooth-shadow: #7a6298; }
+.db-arch-label { position: absolute; left: 50%; transform: translateX(-50%); font-size: 10px; color: #86788f; }
+.db-arch-label.upper { top: 7%; }
+.db-arch-label.lower { bottom: 6%; }
+.db-patient-side { position: absolute; top: 49%; color: #887c93; font-size: 10px; }
+.db-patient-side.right { left: 1%; }.db-patient-side.left { right: 1%; }
+.db-chart-center { position: absolute; left: 24%; right: 24%; top: 49%; text-align: center; color: #81748d; font-size: 11px; }
+.db-connector { position: absolute; transform: translate(-50%, -50%); width: 13px; height: 13px; margin: 0; z-index: 1; cursor: pointer; accent-color: #4c9d6b; }
+.db-connector.incompatible { outline: 2px solid #be4e59; outline-offset: 0; }
+.db-chart-shortcuts { display: flex; justify-content: center; gap: 7px; margin-top: -4px; }
+.db-indication-key { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 14px; font-size: 10px; margin: 12px 0 2px; color: #62566d; }
+.db-indication-key span { display: inline-flex; gap: 5px; align-items: center; }
+.db-indication-key span::before, .db-type-dot { content: ""; width: 9px; height: 9px; background: #b6b0bd; border: 1px solid #958b9f; border-radius: 2px; flex-shrink: 0; }
+.db-indication-key .role-crown::before, .db-type-dot.role-crown { background: #f5f0de; border-color: #c6bc9d; }
+.db-indication-key .role-pontic::before, .db-type-dot.role-pontic { background: #d66b70; border-color: #a74f59; }
+.db-indication-key .role-adjacent::before, .db-type-dot.role-adjacent { background: #a3a7ac; }
+.db-indication-key .role-antagonist::before, .db-type-dot.role-antagonist { background: #a38cc0; }
+.db-scan-settings { display: grid; grid-template-columns: minmax(180px, 1fr) 100px; gap: 9px 12px; padding: 12px 18px; border-top: 1px solid #c5becd; }
+.db-antagonist { display: flex; gap: 6px; align-items: center; color: #5e516a; font-size: 11px; }
+.db-extra-summary { font-size: 10px; color: #7c6e88; grid-column: 1 / -1; }
+.db-required-scans { padding: 8px 18px 12px; color: #62556f; font-size: 11px; }
+.db-required-scans summary { cursor: pointer; }
+.db-actions { background: linear-gradient(90deg, #38303f, #241d2c); color: #e7deee; border-left: 1px solid #766484; padding: 0 5px 12px; display: flex; flex-direction: column; gap: 5px; }
+.db-actions h2 { font: 400 12px Arial, sans-serif; padding: 11px 6px 13px; }
+.dentaldb-intake .db-actions .btn { border: 1px solid transparent; background: transparent; color: #e9e0f1; height: 76px; padding: 8px 3px; display: flex; flex-direction: column; gap: 7px; white-space: normal; text-align: center; font-size: 11px; }
+.dentaldb-intake .db-actions .btn-primary { background: linear-gradient(#8c719e, #654d7a); border-color: #af95c4; }
+.db-actions .ico { width: 29px; height: 29px; color: #deceeb; }
+.db-actions .db-back { margin-top: auto; }
+.db-bottom-bar { min-height: 36px; border-top: 1px solid #b8b0c2; padding: 7px 12px; background: #d5d0dc; color: #73677e; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 11px; }
+.db-bottom-bar > div { display: flex; gap: 8px; }
+.db-step-heading { padding: 15px 20px; border-bottom: 1px solid #bcb3c7; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; }
+.db-step-heading h1 { font: 500 16px Arial, sans-serif; }.db-step-heading span { color: #7b6d88; }
+.db-import-page { padding: 20px; }
+.dentaldb-intake .job-error { margin: 0; border-radius: 0; padding: 10px 15px; }
+.dentaldb-intake .job-error[hidden] { display: none; }
+.dentaldb-intake .panel { background: #f2f0f5; }
+.job-hint { font-size: 11px; color: #776983; line-height: 1.5; margin: 9px 0; }
+.job-scan-needs { list-style: none; padding: 5px 0; }
+.job-scan-needs li { display: grid; gap: 3px; padding: 8px 0; border-bottom: 1px solid #d0c8d9; }
+.job-scan-needs strong { font-size: 12px; font-weight: 500; }.job-scan-needs span { font-size: 10px; color: #7c6e88; }
+.job-scan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(265px, 1fr)); gap: 16px; }
+.job-scan-slot p { font-size: 12px; }.job-file { background: #e2dbe9; padding: 10px; border-radius: 3px; overflow-wrap: anywhere; }
+.job-file p { margin: 5px 0 9px; }.job-import-options { margin-top: 18px; }.job-import-options .field { max-width: 260px; }
+.job-review-table { overflow-x: auto; }.job-review-table .table { color: #332a3d; }
+.db-tooth-dialog { width: min(880px, calc(100vw - 40px)); max-height: calc(100dvh - 40px); padding: 0; color: #2e2736; background: #e9e6ee; border: 1px solid #8a7b97; border-radius: 5px; box-shadow: 0 16px 70px #241b354f; font: 12px Arial, sans-serif; overflow-y: auto; }
+.db-tooth-dialog::backdrop { background: #27203066; }
+.db-dialog-title { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: linear-gradient(#f5f2f8, #d3cadf); border-bottom: 1px solid #b2a4bf; }
+.db-dialog-title h2 { font: 500 15px Arial, sans-serif; }.db-dialog-title .btn { border: 0; background: transparent; min-width: 28px; font-size: 18px; }
+.db-dialog-columns { display: grid; grid-template-columns: 1.2fr .9fr 1fr; }
+.db-dialog-columns > section { padding: 14px; min-width: 0; }.db-dialog-columns > section + section { border-left: 1px solid #c0b5cb; }
+.db-dialog-columns h3 { margin: 0 0 10px; font: 500 12px Arial, sans-serif; }
+.db-dialog-columns h3:not(:first-child) { margin-top: 20px; }
+.db-indication-list { display: grid; gap: 3px; }.db-indication-list h4 { margin: 9px 0 4px; font: 500 11px Arial, sans-serif; color: #766784; }
+.db-indication-list h4:first-child { margin-top: 0; }
+.db-indication-list button, .db-material-list button { display: flex; align-items: center; gap: 8px; text-align: left; padding: 8px; min-height: 32px; border: 1px solid transparent; border-radius: 3px; background: transparent; color: #46394f; font: 12px Arial, sans-serif; }
+.db-indication-list button { flex-wrap: wrap; }.db-indication-list button small { width: 100%; padding-left: 17px; font-size: 10px; color: #887a94; }
+.db-indication-list button[aria-pressed="true"], .db-material-list button[aria-pressed="true"] { background: #d3c2e3; border-color: #ac95bf; color: #3c294f; }
+.db-material-list { display: grid; gap: 4px; }.db-material-list button { border-color: #c4b8cf; background: linear-gradient(#fcfaff, #e0d9e9); }
+.db-dialog-columns select.select { margin-bottom: 10px; }
+.db-implant-options { margin: 17px 0; border: 1px solid #c2b8cc; padding: 9px; display: grid; gap: 9px; opacity: .6; }
+.db-implant-options legend { padding: 0 5px; }.db-implant-options label { display: flex; gap: 5px; }.db-implant-options small { font-size: 10px; color: #776783; }
+.db-extra-options { display: grid; gap: 12px; margin: 18px 0; }.db-extra-options label { display: flex; align-items: center; gap: 7px; }
+.db-tooth-dialog input[type="checkbox"] { accent-color: #9272ae; }
+.db-dialog-parameters { border-top: 1px solid #c4b7d1; padding-top: 12px; font-size: 11px; }
+.db-dialog-parameters summary { cursor: pointer; }.db-dialog-parameters label { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 10px; }
+.db-dialog-parameters input { width: 65px; margin-left: auto; background: #fff; border: 1px solid #a99bb5; padding: 4px; color: #32263e; }
+.db-tooth-dialog footer { display: flex; justify-content: flex-end; gap: 8px; padding: 10px 14px; border-top: 1px solid #bdb0c9; background: #ddd4e7; }
+.db-tooth-dialog footer .btn { min-width: 78px; }.db-tooth-dialog footer .btn:first-child { margin-right: auto; }
+@media (max-width: 1000px) {
+  .db-workbench { grid-template-columns: 235px minmax(0, 1fr) 82px; }
+  .db-chart-region { padding: 0 8px 10px; }.db-chart-center { font-size: 10px; }
+  .db-scan-settings { grid-template-columns: minmax(0, 1fr) 75px; padding: 12px; }
 }
 @media (max-width: 760px) {
-  .job-definition { grid-template-columns: minmax(0, 1fr); }
-  .job-definition > aside { grid-template-columns: minmax(0, 1fr); }
-  .job-scan-grid { grid-template-columns: minmax(0, 1fr); }
-  .job-intake .stepper { gap: 8px; flex-wrap: wrap; }
-  .job-intake .stepper li { min-width: 0; font-size: 11px; }
+  html[data-dental-intake] .shell { position: static; margin: 0; }
+  .db-workbench { grid-template-columns: minmax(0, 1fr) 65px; }
+  .db-project { grid-column: 1 / -1; grid-row: 2; border-right: 0; border-top: 1px solid #bdb2c7; }
+  .db-project-body { grid-template-columns: 1fr 1fr; }.db-project-message, .db-notes { grid-column: 1 / -1; }
+  .db-indications { grid-column: 1; grid-row: 1; }.db-actions { grid-column: 2; grid-row: 1; }
+  .dentaldb-intake .db-actions .btn { font-size: 10px; }
+  .db-chart-region { overflow-x: auto; }.db-dental-chart { min-width: 370px; }
+  .db-tooth-dialog { width: calc(100vw - 18px); max-height: calc(100dvh - 18px); }
+  .db-dialog-columns { grid-template-columns: minmax(0, 1fr); }.db-dialog-columns > section + section { border-left: 0; border-top: 1px solid #c0b5cb; }
+  .db-application-bar { gap: 8px; flex-wrap: wrap; }.db-job-caption { margin-left: 0; }
+  .job-scan-grid { grid-template-columns: minmax(0, 1fr); }.db-bottom-bar { align-items: flex-start; flex-direction: column; }
+  .db-import-page { padding: 12px; }
 }
