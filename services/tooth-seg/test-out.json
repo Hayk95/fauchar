@@ -1,0 +1,50 @@
+{
+  "detections": [
+    {
+      "label": "Molars",
+      "tooth_id": "Molars",
+      "confidence": 0.351,
+      "bbox": [
+        43,
+        125,
+        276,
+        580
+      ],
+      "area_px": 19
+    },
+    {
+      "label": "Incisors",
+      "tooth_id": "Incisors",
+      "confidence": 0.669,
+      "bbox": [
+        19,
+        91,
+        311,
+        606
+      ],
+      "area_px": 9413
+    },
+    {
+      "label": "Filling",
+      "tooth_id": "Filling",
+      "confidence": 0.793,
+      "bbox": [
+        18,
+        73,
+        313,
+        605
+      ],
+      "area_px": 21399
+    }
+  ],
+  "summary": {
+    "Molars": 1,
+    "Premolars": 0,
+    "Canines": 0,
+    "Incisors": 1,
+    "Fillings": 1
+  },
+  "inference_ms": 1354,
+  "model_type": "pytorch",
+  "is_demo": false
+}

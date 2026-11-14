@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Legacy DOM clients attach listeners once; Strict Mode remounts break WebGL/CAD.
+  reactStrictMode: false,
 };
 
 export default nextConfig;
