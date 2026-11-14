@@ -1,4 +1,5 @@
 import PlainBoot from "@/components/site/PlainBoot";
+import Link from "next/link";
 import { VOXEL_CELLS } from "@/lib/brandMark";
 
 const links = [
@@ -64,10 +65,10 @@ export default function SiteFrame({
       </a>
       <header className="site-header" id="header">
         <div className="wrap header-inner">
-          <a className="logo" href="/" aria-label="FAUCHAR, home">
+          <Link className="logo" href="/" aria-label="FAUCHAR, home">
             <Mark />
             <Wordmark />
-          </a>
+          </Link>
           <nav className="site-nav" id="site-nav" aria-label="Primary">
             <ul>
               {links.map((link) => (
@@ -80,17 +81,17 @@ export default function SiteFrame({
               <a className="btn btn-ghost" href="/signin">
                 Sign in
               </a>
-              <a className="btn btn-primary" href="/#contact">
+              <Link className="btn btn-primary" href="/#contact">
                 Get in Touch
-              </a>
+              </Link>
             </div>
           </nav>
           <a className="btn btn-ghost header-cta" href="/signin" style={{ marginRight: "0.5rem" }}>
             Sign in
           </a>
-          <a className="btn btn-primary header-cta" href="/#contact">
+          <Link className="btn btn-primary header-cta" href="/#contact">
             Get in Touch
-          </a>
+          </Link>
           <button className="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
             <span className="sr-only" data-toggle-label="">
               Open menu
@@ -105,10 +106,10 @@ export default function SiteFrame({
       <footer className="site-footer">
         <div className="wrap footer-grid">
           <div className="footer-brand">
-            <a className="logo" href="/" aria-label="FAUCHAR, home">
+            <Link className="logo" href="/" aria-label="FAUCHAR, home">
               <Mark />
               <Wordmark />
-            </a>
+            </Link>
           </div>
           <nav className="footer-nav" aria-label="Footer">
             <ul>
