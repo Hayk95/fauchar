@@ -57,7 +57,7 @@ merely because a matching panel exists.
 
 | Capability family | Coverage in this PR / repository |
 | --- | --- |
-| Case records, tooth selection, projects | Existing local cases, FDI selection and MySQL project metadata; full scene cloud sync absent. |
+| Case records, tooth selection, projects | New definition-first job intake, per-tooth roles/material/shade, connectors, role-dependent scans and atomic local save; MySQL project metadata exists; full scene cloud sync absent. |
 | Scan import and review | Binary/ASCII STL worker processing; no PLY/OBJ texture scan import or automatic inter-jaw registration. |
 | Tooth identification | Existing geometric arch/FDI algorithm; manual corrections; not trained AI segmentation. |
 | Margins | Existing detection and editing; new workflow prerequisite checks. |
@@ -108,6 +108,10 @@ browser module-worker handler inside a Node worker thread. They cover topology,
 STL round-trip, starter families, reversed margins, invalid input, wizard gates,
 worker errors/cancel/restart, input-buffer retention, merged output and memory
 limits, undo/redo, editable reopen, and parameter persistence.
+
+Additional `test:intake` and `test:margin` suites cover the job definition DOM,
+scan-role planning and direct margin drawing/editing. See
+[job setup and margin details](JOB_SETUP_AND_MARGIN.md).
 
 On the task host the default full-resolution starter took about 0.5 seconds for
 generation, and under one second including an STL round-trip in the headless

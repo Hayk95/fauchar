@@ -7,10 +7,20 @@ object visibility controls, right command rail and expert toolbar use the same
 general desktop layout and core crown/bridge order documented by DentalCAD.
 These are original FAUCHAR implementations, not exocad code, assets or libraries.
 
+Create new work from **New job / appointment**: define tooth indications and
+materials on the FDI chart first, import the requested scan roles, then save and
+open WebGL. Crown and bridge presets assign abutments, pontics and connectors;
+the scan plan depends on the selected jaw and options. See
+[job setup and margin editing](docs/JOB_SETUP_AND_MARGIN.md).
+
 For a scan-only case: review the scan and its orientation, draw the preparation
 margin, set the insertion direction, then choose **Crown bottom → Build editable
 crown**. Finish the procedural starter with Placement, Freeforming, Contacts and
 Review, and export the edited STL. A restoration STL can also be imported.
+Margin starts in drawing mode when there is no line. Hold and trace or click
+points; use **Finish line**, **Undo stroke**, **Cancel drawing**, or return to the
+highlighted start. Drag the closed line or a handle to adjust it. **Find margin**
+waits for a click on the preparation before making a proposal.
 Generation and merged export run in cancellable module workers. **Quality** on
 the right switches preview pixel density without changing export resolution.
 
