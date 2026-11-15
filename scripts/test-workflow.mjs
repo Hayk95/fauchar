@@ -454,3 +454,34 @@ test("the original library tooth is placed unchanged, moved by hand, and only cu
   }
   assert.ok(near / n < 0.25, `the crown keeps the placed anatomy above the cervical third (${(near / n).toFixed(2)} mm)`);
 });
+
+test("a case-file crown that was replaced does not come back next to the new crown on reopen", async () => {
+  const viewer = mockViewer();
+  const fileCrown = { id: "demo-crown", vid: "demo-crown", kind: "crown", fromFile: true, name: "Crown 22", visible: true };
+  viewer.meshes.set("demo-crown", {});
+  const replaced = createCrown({ ...payload, segments: 48, rings: 12 });
+  const saved = { version: 1, objects: [{ id: "cad:crown-2", kind: "crown", name: "Crown 22", frame: replaced.frame, positions: replaced.positions, indices: replaced.indices, original: replaced.positions, originalIdx: replaced.indices, seg: replaced.seg, source: replaced.source, style: null }] };
+  const ed = new CadEditor({ viewer, caseData: { id: "DEMO", teeth: [22] }, io: { toast() {}, loadDesign: async () => saved } });
+  ed.objects.set(fileCrown.id, fileCrown); ed.scanObjects = [];
+  await ed.restoreDesign();
+  const crowns = [...ed.objects.values()].filter(o => o.kind === "crown");
+  assert.deepEqual(crowns.map(o => o.id), ["cad:crown-2"]);
+  assert.equal(viewer.meshes.has("demo-crown"), false);
+  // A save that still lists the file crown keeps it.
+  const keep = new CadEditor({ viewer: mockViewer(), caseData: { id: "DEMO", teeth: [22] }, io: { toast() {}, loadDesign: async () => ({ version: 1, objects: [] }) } });
+  keep.objects.set(fileCrown.id, { ...fileCrown }); keep.scanObjects = [];
+  await keep.restoreDesign();
+  assert.equal(keep.objects.has("demo-crown"), false, "an empty save after removal drops it too");
+});
+
+test("an older save holding the case-file crown and its replacement keeps only the replacement", async () => {
+  const viewer = mockViewer();
+  const replaced = createCrown({ ...payload, segments: 48, rings: 12 });
+  const item = (id) => ({ id, kind: "crown", name: "Crown 22", frame: replaced.frame, positions: replaced.positions, indices: replaced.indices, original: replaced.positions, originalIdx: replaced.indices, seg: replaced.seg, source: replaced.source, style: null });
+  const ed = new CadEditor({ viewer, caseData: { id: "DEMO", teeth: [22] }, io: { toast() {}, loadDesign: async () => ({ version: 1, objects: [item("demo-crown"), item("cad:crown-5")] }) } });
+  const fileCrown = { id: "demo-crown", vid: "demo-crown", kind: "crown", fromFile: true, name: "Crown 22", visible: true };
+  ed.addObject(fileCrown, { positions: replaced.positions.slice(), indices: replaced.indices.slice() }, {});
+  fileCrown.fromFile = true; fileCrown.frame = replaced.frame; ed.scanObjects = [];
+  await ed.restoreDesign();
+  assert.deepEqual([...ed.objects.values()].filter(o => o.kind === "crown").map(o => o.id), ["cad:crown-5"]);
+});
