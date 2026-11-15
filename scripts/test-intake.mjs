@@ -121,6 +121,30 @@ test("actual bridge picker assigns abutments, pontics and connectors before requ
 });
 
 
+test("the appointment page is the DentalDB project, arch and actions, and a tooth opens its definition", () => {
+  const h = harness();
+  try {
+    assert.equal(h.view.querySelector(".db-project h2").textContent, "Project");
+    assert.equal(h.view.querySelector(".db-indications h2").textContent, "Indication and materials");
+    assert.equal(h.view.querySelector(".db-actions h2").textContent, "Actions");
+    assert.equal(h.view.querySelector("dialog"), null);
+    assert.equal(h.view.querySelectorAll(".db-tooth[aria-pressed='true']").length, 0);
+    const tooth = h.view.querySelector('[data-tooth="46"]');
+    assert.ok(tooth.querySelector(".db-tooth-number").textContent === "46");
+    h.click('[data-tooth="46"]');
+    assert.equal(h.view.querySelector("#db-tooth-dialog-title").textContent, "Tooth 46");
+    assert.equal(h.view.querySelectorAll(".db-dialog-columns > section").length, 3);
+    h.click('[data-indication="crown"]');
+    h.click('[data-material="Zirconia"]');
+    h.click('[data-shade="B2"]');
+    h.click('[data-action="apply-unit"]');
+    assert.equal(h.intake.flow.job.units.find(u => u.fdi === 46).shade, "B2");
+    assert.equal(h.intake.flow.job.units.find(u => u.fdi === 46).material, "Zirconia");
+    assert.equal(scanPlan(h.intake.flow.job).find(s => s.id === "lower").required, true);
+    assert.equal(scanPlan(h.intake.flow.job).find(s => s.id === "upper").label.includes("antagonist"), true);
+  } finally { h.intake.dispose(); }
+});
+
 test("DentalDB tooth dialog commits only on OK and leaves cancelled settings untouched", () => {
   const h = harness();
   try {

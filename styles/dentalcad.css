@@ -73,7 +73,8 @@ html[data-dental-session] .topnav, html[data-dental-session] .ws-select { displa
 .dental-commands button span { font-size: 26px; line-height: 1; color: #dfccea; }
 .dental-commands button:hover { background: #51435f; }
 .dental-commands button[aria-pressed="true"] { background: #5c4770; border-color: #b296c5; color: #fff; }
-.dental-cad .cad-ribbon { grid-column: 1 / -1; grid-row: 3; display: flex; flex-wrap: wrap; gap: 6px; padding: 5px 9px; background: #29232f; border-top: 1px solid #776886; border-bottom: 1px solid #675974; }
+.dental-cad:not(.is-session) .cad-ribbon { display: none; }
+.dental-cad.is-session .cad-ribbon { grid-column: 1 / -1; grid-row: 3; display: flex; flex-wrap: wrap; gap: 6px; padding: 5px 9px; background: #29232f; border-top: 1px solid #776886; border-bottom: 1px solid #675974; }
 .dental-cad .cad-ribbon-tools { flex-wrap: wrap; overflow: visible; gap: 3px; }
 .dental-cad .cad-ribbon-tools button { color: #dfd5e5; border: 1px solid #655770; border-radius: 3px; background: linear-gradient(#514758, #39303f); font-size: 11px; height: 29px; padding: 0 8px; }
 .dental-cad .cad-ribbon-tools button[aria-pressed="true"] { color: #302410; background: linear-gradient(#ffdda4, #dca14a); border-color: #f0c78b; }
@@ -178,7 +179,9 @@ html[data-dental-intake] .shell { inset: 0; grid-template-columns: minmax(0, 1fr
 .db-tooth-outline { stroke: var(--tooth-border); stroke-width: .9; }
 .db-tooth-fissure { fill: none; stroke: var(--tooth-fissure); stroke-width: 1; opacity: .65; }
 .db-tooth-shine { fill: none; stroke: #fff; stroke-width: 1.4; opacity: .55; }
-.db-tooth:hover .db-tooth-outline, .db-tooth[aria-pressed="true"] .db-tooth-outline { stroke: #9066b3; stroke-width: 2.5; }
+.db-tooth:hover .db-tooth-outline, .db-tooth[aria-pressed="true"] .db-tooth-outline { stroke: #6d3d93; stroke-width: 2.6; }
+.db-tooth[aria-pressed="true"] { z-index: 3; }
+.db-tooth[aria-pressed="true"]::after { content: "✓"; position: absolute; right: -4px; top: -8px; width: 14px; height: 14px; border-radius: 50%; background: #fff; color: #c56a2d; font: 700 10px/14px Arial, sans-serif; text-align: center; box-shadow: 0 0 0 1px #e0a36a; }
 .db-tooth:focus-visible { outline: 2px solid #9863bd; outline-offset: 5px; border-radius: 8px; }
 .db-tooth-number { position: absolute; left: 50%; transform: translateX(-50%); font: 11px Arial, sans-serif; }
 .db-tooth.upper .db-tooth-number { top: -17px; }
@@ -296,10 +299,14 @@ html[data-dental-intake] .shell { inset: 0; grid-template-columns: minmax(0, 1fr
 .db-first-palette h4 { margin: 9px 0 4px; font: 400 12px Arial,sans-serif; }
 .db-order-details > summary { padding: 12px 16px; cursor: pointer; border-top: 1px solid #dedde0; }
 .db-project, .db-indications { background: #fafafa; }
-.db-dental-chart .db-tooth-number { left: 50%; top: 50%; bottom: auto; transform: translate(-50%,-50%); pointer-events: none; font-weight: bold; color: #49444d; text-shadow: 0 0 3px white; }
+.db-dental-chart .db-tooth .db-tooth-number { left: 50%; top: 50%; bottom: auto; transform: translate(-50%, -50%); pointer-events: none; font: 700 10px/1 Arial, sans-serif; color: #3a3540; text-shadow: 0 0 3px #fff, 0 0 3px #fff; }
+.db-arch-label.upper { top: 2%; }
+.db-arch-label.lower { bottom: 1%; }
 @media(min-width:761px) {
- .db-workbench { grid-template-columns: minmax(315px,39fr) minmax(300px,45fr) minmax(95px,16fr); }
- .db-workbench .db-actions { background: #f2f2f3; color: #60596a; border-left: 1px solid #ddd; }
- .dentaldb-intake .db-actions .btn { color: #51485e; justify-content: flex-start; flex-direction: row; }
- .db-chart-region .db-dental-chart { width: min(100%,560px); }
+ .db-workbench { grid-template-columns: 300px minmax(0, 1fr) 112px; }
+ .db-workbench .db-actions { background: #f3f3f4; color: #4e4658; border-left: 1px solid #d7d7da; }
+ .dentaldb-intake .db-actions .btn { color: #3e3648; flex-direction: column; justify-content: center; height: 74px; background: transparent; }
+ .dentaldb-intake .db-actions .btn-primary { background: linear-gradient(#8c719e, #654d7a); color: #fff; }
+ .db-chart-region .db-dental-chart { width: min(100%, 680px); }
+ .db-project-tools { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }

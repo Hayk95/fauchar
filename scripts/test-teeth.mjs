@@ -3,7 +3,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { V, parseBinarySTL } from "../lib/client/cad/mesh.js";
 import * as ops from "../lib/client/cad/ops.js";
-import { detectTeeth, labelTeeth } from "../lib/client/cad/teeth.js";
+import { anchorJobTooth, detectTeeth, labelTeeth } from "../lib/client/cad/teeth.js";
 
 const dir = new URL("../public/assets/sample/", import.meta.url);
 const load = (name) => {
@@ -16,6 +16,24 @@ const check = (label, ok, detail = "") => {
   if (!ok) failed++;
   console.log(`${ok ? "pass" : "FAIL"}  ${label}${detail ? `  ·  ${detail}` : ""}`);
 };
+
+{
+  const model = {
+    jaw: "lower", status: "ok", anteriorKnown: false,
+    frame: { a: [1, 0, 0], b: [0, 1, 0], O: [0, 0, 1] },
+    curve: { points: [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]] },
+    teeth: [
+      { fdi: 36, from: 0, to: 1, width: 10, center: [0.5, 0, 0], stump: true, confidence: 0.8 },
+      { fdi: 35, from: 2, to: 4, width: 7, center: [3, 0, 0], confidence: 0.8 },
+    ],
+  };
+  anchorJobTooth(model, 46);
+  check("a single preparation stump takes the appointment number 46", model.teeth.some((t) => t.fdi === 46), model.teeth.map((t) => t.fdi).join(" "));
+  check("46 stays unconfirmed until a technician sets it", model.jobToothConfirmed === false);
+  model.status = "reviewed"; model.teeth[0].manual = true; model.teeth[0].fdi = 46;
+  anchorJobTooth(model, 46);
+  check("a reviewed correction confirms 46", model.jobToothConfirmed === true);
+}
 
 // Scan axes of this case: Z-up, upper teeth point toward -Z.
 const crownRaw = load("demo-crown-22.stl");
