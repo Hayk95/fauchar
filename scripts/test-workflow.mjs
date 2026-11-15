@@ -407,3 +407,22 @@ test("library tooth 46 on the lower partial arch finds both neighbours and point
   assert.ok(result.frame.mesial[2] > 0.8, `mesial ${result.frame.mesial}`);
   assert.ok(result.frame.facial[0] < -0.8, `facial ${result.frame.facial}`);
 });
+
+test("tooth 22 placed by the library arch fitted to its neighbours matches the exocad crown of the case", async () => {
+  const { detectTeeth } = await import("../lib/client/cad/teeth.js");
+  const read = name => { const b = readFileSync(new URL(name, import.meta.url)); return parseBinarySTL(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)); };
+  const model = detectTeeth(scan.positions, scan.indices, "upper", { occlusal: [0, 0, -1] });
+  const arch = { occlusal: model.occlusal, teeth: model.teeth.map(({ fdi, center, stump, partial, confidence }) => ({ fdi, center, stump, partial, confidence })) };
+  const result = runKernelTask("crown-stl", { ...payload, shell: read("../public/assets/teeth/22.stl"), libFrame: null, arch });
+  assert.match(result.source.placement, /^arch fit to/);
+  assert.equal(result.stats.closed, true);
+  const ref = read("../public/assets/sample/demo-crown-22.stl");
+  const mean = (from, to) => { let s = 0, n = 0; for (let v = 0; v < from.length / 3; v += 3) { const c = to.closest([from[v * 3], from[v * 3 + 1], from[v * 3 + 2]], 8); if (c) { s += c.d; n++; } } return s / n; };
+  const outer = new BVH(result.positions, result.indices, result.seg.outTris);
+  const outerPos = Float32Array.from(result.seg.outTris.flatMap(t => [0, 1, 2].flatMap(k => { const v = result.indices[t * 3 + k]; return [result.positions[v * 3], result.positions[v * 3 + 1], result.positions[v * 3 + 2]]; })));
+  assert.ok(mean(outerPos, new BVH(ref.positions, ref.indices)) < 0.45, "our surface stays on the exocad crown");
+  assert.ok(mean(ref.positions, outer) < 0.6, "the exocad crown is covered by ours");
+  // A clean surface: no folded sheets (a fold multiplies the area).
+  assert.ok(result.stats.area < 340, `area ${result.stats.area}`);
+  assert.ok(result.stats.volume > 60 && result.stats.volume < 160, `volume ${result.stats.volume}`);
+});

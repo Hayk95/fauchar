@@ -152,17 +152,22 @@ no exocad source code, branded artwork or proprietary library was copied.
   Re-run it after replacing any tooth file.
 - Crown bottom → *Place tooth N* runs `fitLibraryCrown` (`lib/client/cad/tooth-library-stl.js`) in the
   kernel worker:
-  1. facial from the local arch line of the jaw scan, mesial from the library's handedness;
-  2. mesial–distal width from the gap between the neighbours, height from their chewing level;
-  3. the cervical edge is pulled onto margin + margin border, fading out toward the cusps, then smoothed;
-  4. intaglio = preparation + cement gap (margin gap at the rim), zipped to the shell → one closed solid;
-  5. minimum wall enforced; the chewing table is lifted if the preparation would leave less.
+  1. placement like a library tooth setup: the library arch (all 32 files share one frame) is fitted
+     to the numbered neighbours of the scan (rotation, translation, uniform scale; surface height at each
+     crown centre), which gives the tooth its position, inclination, labial line and incisal/occlusal level.
+     Without at least three reliable neighbours it falls back to measuring the gap and chewing height;
+  2. the outer surface is resampled along meridians from one point inside the crown: ring 0 lies on
+     margin + margin border, the emergence profile leaves the margin straight and blends into the anatomy.
+     Rays from one point cannot fold the surface;
+  3. along every ray the outer surface stays at least the wall beyond the intaglio (tapering to the margin
+     border); where the preparation comes close, the extra thickness is spread smoothly like added wax;
+  4. intaglio = preparation + cement gap (margin gap at the rim) → one closed solid.
 - An open shell dropped on the 3D view goes through the same pipeline (frame guessed from the shell).
 - The appointment chart draws both arches from the same outlines.
 
 ### Verified
-- Real scan (demo upper, tooth 22): closed crown, rim ≤ 0.13 mm from the margin, wall ≥ 0.79 mm,
-  0.44 mm mean distance to the exocad-made reference crown for that case.
+- Real scan (demo upper, tooth 22, arch fit to 23 21 24 11 25 12, rms 0.89 mm): height 7.90 mm vs 8.18 mm,
+  volume 101 vs 90 mm³, wall median 0.91 vs 0.85 mm, surface 0.29 mm mean from the exocad-made crown of the case.
 - Procedural fixture (lower partial arch, tooth 46): neighbours found (11.0 mm gap), mesial along the arch;
   in the browser: appointment → scans → tooth confirmation → one-click margin → axis → placement →
   occlusal clearance → save → reopen → export (closed, 0 open edges, mm, scan coordinates).

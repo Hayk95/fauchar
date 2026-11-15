@@ -4,7 +4,7 @@
  * crown size, and an occlusal outline used by the appointment chart.
  */
 import { readFileSync, writeFileSync } from "node:fs";
-import { parseBinarySTL, V, vertexAt } from "../lib/client/cad/mesh.js";
+import { BVH, parseBinarySTL, V, vertexAt } from "../lib/client/cad/mesh.js";
 import { shellRim } from "../lib/client/cad/tooth-library-stl.js";
 
 const FDI = [1, 2, 3, 4].flatMap(q => Array.from({ length: 8 }, (_, i) => q * 10 + i + 1));
@@ -52,10 +52,14 @@ for (const fdi of FDI) {
     const a = ((i + 0.5) / bins) * 2 * Math.PI - Math.PI;
     return [Number((Math.cos(a) * rad).toFixed(2)), Number((Math.sin(a) * rad).toFixed(2))];
   });
+  // Surface height at the crown's plan centre: compared with the same measure on the patient's teeth.
+  const bvh = new BVH(t.mesh.positions, t.mesh.indices);
+  const hit = bvh.raycast(V.add(t.centroid, V.mul(occ, 30)), V.mul(occ, -1));
+  const top = hit ? hit.point : V.add(t.rim, V.mul(occ, height));
   const md = Math.max(...outline.map(p => p[0])) - Math.min(...outline.map(p => p[0]));
   const bl = Math.max(...outline.map(p => p[1])) - Math.min(...outline.map(p => p[1]));
   atlas[fdi] = {
-    file: `${fdi}.stl`, rim: round(t.rim), centroid: round(t.centroid),
+    file: `${fdi}.stl`, rim: round(t.rim), centroid: round(t.centroid), top: round(top),
     occlusal: round(occ, 5), mesial: round(mesial, 5), facial: round(facial, 5),
     md: Number(md.toFixed(2)), bl: Number(bl.toFixed(2)), height: Number(height.toFixed(2)), outline,
   };
