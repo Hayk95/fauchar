@@ -75,6 +75,8 @@ asset-license findings and concrete missing production capabilities.
 
 - Empty margin opens in Trace mode on the job's prepared tooth. Opening the tool
   no longer waits for whole-arch FDI identification.
+- The teeth on either side of the preparation are hidden from the first drawn
+  point until the line is finished or cancelled, then shown again.
 - Hold and draw on the surface, release to pause, and continue from another view;
   individual point clicks still work. Alt-drag rotates, Shift/right-drag pans.
 - A highlighted start target closes a sufficiently long trace when approached on

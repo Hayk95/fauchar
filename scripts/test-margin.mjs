@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test, afterEach } from "node:test";
 import { CadEditor } from "../lib/client/cad/editor.js";
 import { workflowProblem } from "../lib/client/cad/workflow.js";
+import { drawingNeighborLabels, makeMesh } from "../lib/client/cad/ops.js";
 
 const editors = [], frames = [];
 globalThis.requestAnimationFrame = callback => { frames.push(callback); return frames.length; };
@@ -93,6 +94,50 @@ test("back-side handles are ignored and Shift retains camera navigation", () => 
   ed.pick = () => ({ t: 1, point: [0, 0, 1] });
   assert.equal(ed.marginHandleAt({ x: 0, y: 0 }), 1);
   assert.equal(ed.onDown({ ...pointer([1, 0, 0]), shift: true }), false);
+});
+
+test("drawing hides the tooth beside the preparation and closing shows it again", () => {
+  const { ed } = editor();
+  const calls = [];
+  ed.viewer.setGroupStyle = (id, group, style) => calls.push([id, group, style.visible]);
+  ed.viewer.meshes.set("jaw", { groups: [{ id: "neighbor-m", visible: true }, { id: "neighbor-d", visible: true }] });
+  ed.scanObjects = [{ id: "jaw", vid: "jaw", jaw: "upper", parts: { label: new Uint8Array(0) } }];
+  ed.marginTooth = 22;
+  ed.marginSub = "draw";
+  ed.marginDraft = [[0, 0, 0]];
+  ed.syncDrawingNeighbors();
+  assert.deepEqual(calls, [["jaw", "neighbor-m", false], ["jaw", "neighbor-d", false]]);
+  ed.marginSub = "move";
+  ed.marginDraft = null;
+  ed.syncDrawingNeighbors();
+  assert.equal(calls.at(-1)[2], true, "neighbours return when the line is finished");
+  assert.equal(calls.at(-2)[2], true);
+});
+
+test("a click on one tooth marks the tooth beside it, not the clicked surface", () => {
+  const n = 14, pos = [], idx = [], at = (i, j) => j * n + i;
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+    const x = (i / (n - 1) - 0.5) * 28, y = (j / (n - 1) - 0.5) * 14;
+    const hump = (cx) => Math.exp(-((x - cx) ** 2) / 7 - (y * y) / 20) * 5;
+    pos.push(x, y, hump(-7) + hump(7));
+  }
+  for (let j = 0; j < n - 1; j++) for (let i = 0; i < n - 1; i++) {
+    const a = at(i, j), b = at(i + 1, j), c = at(i, j + 1), d = at(i + 1, j + 1);
+    idx.push(a, b, d, a, d, c);
+  }
+  const mesh = makeMesh(new Float32Array(pos), new Uint32Array(idx));
+  const label = drawingNeighborLabels(mesh, [-7, 0, 5], [0, 0, 1]);
+  const near = (x0) => {
+    let hidden = 0, seen = 0;
+    for (let v = 0; v < mesh.count; v++) {
+      if (Math.hypot(pos[v * 3] - x0, pos[v * 3 + 1]) > 2.5 || pos[v * 3 + 2] < 2) continue;
+      seen++;
+      if (label[v] === 2) hidden++;
+    }
+    return hidden / seen;
+  };
+  assert.ok(near(-7) < 0.2, "the tooth being traced stays visible");
+  assert.ok(near(7) > 0.6, "the neighbouring tooth is hidden");
 });
 
 test("wizard does not use an old saved line while a replacement is still being traced", () => {
