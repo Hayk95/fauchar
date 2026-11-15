@@ -426,3 +426,31 @@ test("tooth 22 placed by the library arch fitted to its neighbours matches the e
   assert.ok(result.stats.area < 340, `area ${result.stats.area}`);
   assert.ok(result.stats.volume > 60 && result.stats.volume < 160, `volume ${result.stats.volume}`);
 });
+
+test("the original library tooth is placed unchanged, moved by hand, and only cut at the margin on OK", async () => {
+  const read = name => { const b = readFileSync(new URL(name, import.meta.url)); return parseBinarySTL(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)); };
+  const shell = read("../public/assets/teeth/22.stl");
+  const placed = runKernelTask("tooth-place", { ...payload, shell, libFrame: null });
+  assert.equal(placed.source.type, "tooth-setup");
+  assert.equal(placed.indices.length, shell.indices.length, "same triangles as the library file");
+  // Unchanged shape: every edge keeps its length up to one uniform scale.
+  const edge = (P, a, b) => Math.hypot(P[a * 3] - P[b * 3], P[a * 3 + 1] - P[b * 3 + 1], P[a * 3 + 2] - P[b * 3 + 2]);
+  const ratios = [];
+  for (let t = 0; t < shell.indices.length; t += 997) ratios.push(edge(placed.positions, shell.indices[t], shell.indices[t + 1]) / edge(shell.positions, shell.indices[t], shell.indices[t + 1]));
+  assert.ok(Math.max(...ratios) - Math.min(...ratios) < 1e-3, "rigid placement with one scale");
+  // The technician lifts it 0.4 mm along the occlusal direction, then presses OK.
+  const moved = placed.positions.slice();
+  for (let i = 0; i < moved.length; i += 3) for (let k = 0; k < 3; k++) moved[i + k] += placed.frame.occlusal[k] * 0.4;
+  const crown = runKernelTask("crown-stl", { ...payload, shell, libFrame: null, placedWorld: moved, placedFrame: placed.frame });
+  assert.equal(crown.stats.closed, true);
+  assert.equal(crown.source.placement, "placed by you");
+  const outer = new BVH(crown.positions, crown.indices, crown.seg.outTris);
+  let top = -Infinity, near = 0, n = 0;
+  for (let i = 0; i < moved.length; i += 30) {
+    const p = [moved[i], moved[i + 1], moved[i + 2]];
+    top = Math.max(top, V.dot(p, placed.frame.occlusal));
+    const c = outer.closest(p, 3);
+    if (c && V.dot(V.sub(p, placed.frame.center), placed.frame.occlusal) > 3) { near += c.d; n++; }
+  }
+  assert.ok(near / n < 0.25, `the crown keeps the placed anatomy above the cervical third (${(near / n).toFixed(2)} mm)`);
+});
