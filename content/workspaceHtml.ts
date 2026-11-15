@@ -175,7 +175,7 @@ export const workspaceHtml = `<svg class="sprite" aria-hidden="true" focusable="
         <div><dt><kbd>W</kbd></dt><dd>Toggle wireframe</dd></div>
         <div><dt><kbd>G</kbd></dt><dd>Toggle grid</dd></div>
         <div><dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></dt><dd>Toggle upper jaw, lower jaw, restoration</dd></div>
-        <div><dt>Drag · Right-drag · Wheel</dt><dd>Rotate · Pan · Zoom</dd></div>
+        <div><dt>Right-drag · Middle-drag · Wheel</dt><dd>Rotate · Pan · Zoom</dd></div>
         <div class="shortcuts-sep"><dt>Design tools</dt><dd></dd></div>
         <div><dt><kbd>Q</kbd> <kbd>T</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>M</kbd> <kbd>O</kbd></dt><dd>Teeth, Move, Anatomy, Sculpt, Margin, Occlusion</dd></div>
         <div><dt><kbd>C</kbd> <kbd>D</kbd> <kbd>B</kbd> <kbd>E</kbd> <kbd>V</kbd></dt><dd>Contacts, Crown, Bridge, Measure, View</dd></div>

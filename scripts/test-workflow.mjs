@@ -485,3 +485,20 @@ test("an older save holding the case-file crown and its replacement keeps only t
   await ed.restoreDesign();
   assert.deepEqual([...ed.objects.values()].filter(o => o.kind === "crown").map(o => o.id), ["cad:crown-5"]);
 });
+
+test("Find margin measures the preparation's own axis and lands on the exocad margin of the case", async () => {
+  const { detectTeeth } = await import("../lib/client/cad/teeth.js");
+  const mesh = ops.makeMesh(scan.positions, scan.indices);
+  const c = V.mul(payload.margin.reduce((s, p) => V.add(s, p), [0, 0, 0]), 1 / payload.margin.length);
+  const top = mesh.bvh.raycast(V.add(c, V.mul(payload.axis, 15)), V.mul(payload.axis, -1)).point;
+  // Start from the jaw's occlusal direction, 23° off this inclined incisor.
+  let axis = detectTeeth(scan.positions, scan.indices, "upper", { occlusal: [0, 0, -1] }).occlusal;
+  for (let pass = 0; pass < 3; pass++) axis = ops.preparationAxis(mesh, top, axis);
+  const tilt = Math.acos(V.dot(axis, V.norm(payload.axis))) * 180 / Math.PI;
+  assert.ok(tilt < 5, `preparation axis ${tilt.toFixed(1)}° from exocad's`);
+  const raw = ops.detectMargin(mesh.bvh, top, axis);
+  const ref = ops.resampleLoop(payload.margin, 400);
+  const d = ops.resampleLoop(raw, 200).map(p => Math.min(...ref.map(q => V.dist(p, q)))).sort((a, b) => a - b);
+  assert.ok(d.reduce((s, x) => s + x, 0) / d.length < 0.1, `mean ${d.reduce((s, x) => s + x, 0) / d.length}`);
+  assert.ok(d[d.length - 1] < 0.35, `max ${d[d.length - 1]}`);
+});
