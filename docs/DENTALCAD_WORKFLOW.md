@@ -63,7 +63,7 @@ merely because a matching panel exists.
 | Margins | Existing detection and editing; new workflow prerequisite checks. |
 | Insertion and undercut maps | Existing calculations exposed as a dedicated stage; full directional undercut block-out absent. |
 | Crown bottom and cement gap | New scan-based starter plus existing intaglio spacing edits. Multiple painted gap zones, detailed border modes and milling-bur compensation absent. |
-| Crown/tooth anatomy | Original choosable forms (Standard, Youthful, Broad, Square, Tapered, Worn) build a wide tooth body and a cusped table on the margin. Exocad and other licensed manufacturer libraries are not included. |
+| Crown/tooth anatomy | One original STL per adult tooth (FDI 11–48) is fitted to the margin, with Standard, Youthful, Broad, Square, Tapered and Worn variations. Exocad and other licensed manufacturer libraries are not included. |
 | Placement | Existing per-object transforms; multi-tooth chain placement/symmetry absent. |
 | Freeforming | Existing geometry brushes, protected margin/intaglio, anatomy sliders and history. |
 | Anatomic reduction / cutback | Not implemented as a thickness-constrained framework workflow. General remove/sculpt tools are not presented as equivalent. |

@@ -266,6 +266,58 @@ test("tooth library lifts a full anatomic crown off the margin and keeps the pre
   assert.throws(() => createCrown({ ...payload, libraryId: "copied" }), /tooth library/);
 });
 
+test("a dropped tooth STL is seated on the margin, cervix down", async () => {
+  const { canonicalTooth } = await import("../lib/client/cad/tooth-forms.js");
+  const { seatTooth } = await import("../lib/client/cad/seat-tooth.js");
+  const tooth = canonicalTooth(46, 48);
+  const margin = Array.from({ length: 48 }, (_, i) => {
+    const a = i / 48 * Math.PI * 2;
+    return [Math.cos(a) * 4.5, Math.sin(a) * 3.6, 0];
+  });
+  const check = (positions) => {
+    const seated = seatTooth(positions, margin, [0, 0, 1]);
+    let low = Infinity, high = -Infinity, n = 0, radial = 0;
+    const heights = [];
+    for (let i = 0; i < seated.positions.length; i += 3) {
+      const z = seated.positions[i + 2];
+      heights.push(z);
+      if (z < low) low = z;
+      if (z > high) high = z;
+    }
+    heights.sort((a, b) => a - b);
+    const cut = heights[Math.floor(heights.length * 0.08)];
+    for (let i = 0; i < seated.positions.length; i += 3) {
+      if (seated.positions[i + 2] > cut) continue;
+      radial += Math.hypot(seated.positions[i], seated.positions[i + 1]);
+      n++;
+    }
+    assert.ok(Math.abs(low) < 0.4, `cervix height ${low}`);
+    assert.ok(high > 3, `occlusal height ${high}`);
+    assert.ok(Math.abs(radial / n - 4) < 0.8, `cervical radius ${radial / n}`);
+  };
+  check(tooth.positions);
+  const moved = new Float32Array(tooth.positions.length);
+  for (let i = 0; i < tooth.positions.length; i += 3) {
+    const x = tooth.positions[i], y = tooth.positions[i + 1], z = tooth.positions[i + 2];
+    moved[i] = x + 40;
+    moved[i + 1] = -z - 25;
+    moved[i + 2] = y + 12;
+  }
+  check(moved);
+});
+
+test("every adult tooth has its own closed anatomic form", async () => {
+  const { canonicalTooth, toothSpec } = await import("../lib/client/cad/tooth-forms.js");
+  for (const q of [1, 2, 3, 4]) for (let n = 1; n <= 8; n++) {
+    const tooth = canonicalTooth(q * 10 + n, 48);
+    assert.equal(tooth.stats.closed, true);
+    assert.equal(tooth.stats.degenerate, 0);
+    assert.ok(tooth.stats.volume > 30, `${q * 10 + n} volume`);
+  }
+  assert.ok(toothSpec(11).md > toothSpec(41).md);
+  assert.notEqual(toothSpec(13).kind, toothSpec(46).kind);
+});
+
 test("user library validates actual STL geometry and rejects unsafe imports", async () => {
   const { validateLibraryMesh } = await import("../lib/client/cad/restoration-library.js");
   const crown = createCrown({ ...payload, segments: 48, rings: 12 });
@@ -297,4 +349,61 @@ test("ToothCraft transports a local STL and returns it to the scan frame", async
     for (let i = 0; i < result.positions.length; i += 3) recovered += scanVertices.has(Array.from(result.positions.subarray(i,i+3), v => v.toFixed(2)).join(","));
     assert.ok(recovered > result.positions.length / 3 * .99);
   } finally { globalThis.fetch = original; }
+});
+
+test("every library tooth STL is one open crown shell with a consistent arch frame", async () => {
+  const { shellRim } = await import("../lib/client/cad/tooth-library-stl.js");
+  const { TOOTH_ATLAS } = await import("../lib/client/cad/tooth-atlas.js");
+  for (const q of [1, 2, 3, 4]) for (let n = 1; n <= 8; n++) {
+    const fdi = q * 10 + n, a = TOOTH_ATLAS[fdi];
+    const buf = readFileSync(new URL(`../public/assets/teeth/${fdi}.stl`, import.meta.url));
+    const shell = parseBinarySTL(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength));
+    assert.ok(shellRim(shell.positions, shell.indices).loop.length >= 60, `${fdi} cervical edge`);
+    assert.ok(Math.abs(V.dot(a.mesial, a.occlusal)) < 1e-3 && Math.abs(V.dot(a.facial, a.occlusal)) < 1e-3, `${fdi} frame`);
+    // Upper crowns point down to the occlusal plane, lower ones up; mesial runs toward the midline (x = 0) or across it for centrals.
+    assert.equal(Math.sign(a.occlusal[2]), q <= 2 ? -1 : 1, `${fdi} occlusal`);
+    if (n > 1) assert.ok(a.mesial[0] * a.centroid[0] < 0, `${fdi} mesial ${a.mesial}`);
+    assert.ok(a.md > 4 && a.md < 13 && a.bl > 4 && a.bl < 13, `${fdi} size`);
+  }
+});
+
+test("library tooth 22 is fitted on the real scan: closed, on the margin, thick enough, close to the reference crown", async () => {
+  const { fitLibraryCrown } = await import("../lib/client/cad/tooth-library-stl.js");
+  const read = name => { const b = readFileSync(new URL(name, import.meta.url)); return parseBinarySTL(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)); };
+  const shell = read("../public/assets/teeth/22.stl");
+  const result = runKernelTask("crown-stl", { ...payload, shell, libFrame: null });
+  assert.equal(result.stats.closed, true); assert.equal(result.stats.invalid, 0); assert.ok(result.stats.volume > 50);
+  assert.equal(result.source.type, "anatomic-stl"); assert.ok(result.source.space.md > 5 && result.source.space.md < 8);
+  let worst = 0;
+  for (const v of result.seg.rimLoop) {
+    const p = [result.positions[v * 3], result.positions[v * 3 + 1], result.positions[v * 3 + 2]];
+    worst = Math.max(worst, Math.min(...payload.margin.map(m => V.dist(p, m))));
+  }
+  assert.ok(worst < 0.2, `rim ${worst}`);
+  const mesh = ops.makeMesh(result.positions, result.indices);
+  const thick = ops.thicknessMap(mesh, result.seg, new BVH(result.positions, result.indices, result.seg.inTris));
+  assert.ok(thick.min > 0.75, `wall ${thick.min}`);
+  const ref = read("../public/assets/sample/demo-crown-22.stl");
+  const refBvh = new BVH(ref.positions, ref.indices);
+  let sum = 0, n = 0;
+  for (let v = 0; v < mesh.count; v += 3) if (!result.seg.intaglio[v]) { const c = refBvh.closest([mesh.pos[v * 3], mesh.pos[v * 3 + 1], mesh.pos[v * 3 + 2]], 6); if (c) { sum += c.d; n++; } }
+  assert.ok(sum / n < 0.8, `mean distance to the reference crown ${sum / n}`);
+  const back = parseBinarySTL(writeBinarySTL([result]));
+  assert.equal(meshStats(back.positions, back.indices).closed, true);
+  assert.throws(() => fitLibraryCrown({ ...payload, shell, relief: 5 }), /range/);
+});
+
+test("library tooth 46 on the lower partial arch finds both neighbours and points mesial along the arch", async () => {
+  const read = name => { const b = readFileSync(new URL(name, import.meta.url)); return parseBinarySTL(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)); };
+  const scan46 = read("../public/assets/sample/sample-lower-scan.stl");
+  const jaw = ops.makeMesh(scan46.positions, scan46.indices);
+  const top = jaw.bvh.raycast([-21.3, 40, -28.3], [0, -1, 0]).point;
+  const margin = ops.detectMargin(jaw.bvh, top, [0, 1, 0]);
+  const result = runKernelTask("crown-stl", { ...scan46, margin, axis: [0, 1, 0], tooth: 46, shell: read("../public/assets/teeth/46.stl") });
+  assert.equal(result.stats.closed, true);
+  assert.ok(result.source.space.mesial && result.source.space.distal, "both neighbours");
+  assert.ok(Math.abs(result.source.space.md - 11) < 1.5, `gap ${result.source.space.md}`);
+  // In this fixture the arch runs along +Z toward the front and 46 sits at negative X.
+  assert.ok(result.frame.mesial[2] > 0.8, `mesial ${result.frame.mesial}`);
+  assert.ok(result.frame.facial[0] < -0.8, `facial ${result.frame.facial}`);
 });
