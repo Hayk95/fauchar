@@ -17,3 +17,7 @@ Use a CUDA workstation, Python 3.10 and a compatible PyTorch 2.9/xformers instal
 Launch the local FAUCHAR web app with NEXT_PUBLIC_TOOTHCRAFT_EVALUATION=1 set before starting/building Next. Open Crown bottom after confirming the preparation margin and insertion direction. Click Generate AI preview. Clear preview removes the overlay. The service accepts only the configured browser origin. No hosted inference provider is required.
 
 Model and source terms are separate. The model authors permit internal commercial evaluation for 90 days after obtaining the model, with no production deployment or third-party outputs under that permission. For commercial deployment obtain appropriate rights from the authors. See https://huggingface.co/DejvaX/ToothCraft and https://github.com/ikarus1211/VISAPP_ToothCraft for attribution and current terms.
+
+## Status on the development Mac (November 2026)
+Not run. Apple M4 Pro has no CUDA (the service refuses to start without it), torch is not installed,
+and neither the authors' source nor the weights are on disk. The STL crown pipeline does not depend on it.

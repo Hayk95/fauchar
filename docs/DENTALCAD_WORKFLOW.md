@@ -143,3 +143,33 @@ no exocad source code, branded artwork or proprietary library was copied.
 - [Merge and save](https://wiki.exocad.com/wiki/index.php/Saving_restorations)
 - [Expert mode](https://wiki.exocad.com/wiki/index.php/Expert_Mode)
 - [Tools](https://wiki.exocad.com/wiki/index.php/Tools)
+
+## Library tooth STLs (November 2026)
+
+- `public/assets/teeth/<FDI>.stl` (11–48) are open crown shells in one shared arch frame. They are the
+  tooth library. `scripts/build-tooth-atlas.mjs` reads them (read-only) and writes
+  `lib/client/cad/tooth-atlas.js`: cervical rim centre, occlusal/mesial/facial axes, size and occlusal outline.
+  Re-run it after replacing any tooth file.
+- Crown bottom → *Place tooth N* runs `fitLibraryCrown` (`lib/client/cad/tooth-library-stl.js`) in the
+  kernel worker:
+  1. facial from the local arch line of the jaw scan, mesial from the library's handedness;
+  2. mesial–distal width from the gap between the neighbours, height from their chewing level;
+  3. the cervical edge is pulled onto margin + margin border, fading out toward the cusps, then smoothed;
+  4. intaglio = preparation + cement gap (margin gap at the rim), zipped to the shell → one closed solid;
+  5. minimum wall enforced; the chewing table is lifted if the preparation would leave less.
+- An open shell dropped on the 3D view goes through the same pipeline (frame guessed from the shell).
+- The appointment chart draws both arches from the same outlines.
+
+### Verified
+- Real scan (demo upper, tooth 22): closed crown, rim ≤ 0.13 mm from the margin, wall ≥ 0.79 mm,
+  0.44 mm mean distance to the exocad-made reference crown for that case.
+- Procedural fixture (lower partial arch, tooth 46): neighbours found (11.0 mm gap), mesial along the arch;
+  in the browser: appointment → scans → tooth confirmation → one-click margin → axis → placement →
+  occlusal clearance → save → reopen → export (closed, 0 open edges, mm, scan coordinates).
+
+### Open
+- No real preparation scan of a 46 was available; the 46 case is a procedural fixture.
+- Arch-geometry numbering still mislabels unusual partial arches; the appointment tooth is anchored
+  on a detected preparation and must be confirmed by the technician.
+- The 2D segmentation service's checkpoint symlink is broken and the service is not used by the STL path.
+- ToothCraft cannot run on this machine (no CUDA, no torch, no weights).
