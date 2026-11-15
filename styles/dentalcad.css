@@ -289,3 +289,17 @@ html[data-dental-intake] .shell { inset: 0; grid-template-columns: minmax(0, 1fr
 .cad-anatomy-library svg { display: block; height: 70px; width: 100%; }.cad-anatomy-library span { font-size: 11px; }
 
 .cad-user-library { display: grid; gap: 6px; margin-top: 10px; }.cad-user-library button { display: grid; gap: 4px; padding: 10px; text-align: left; border: 1px solid #baadc6; border-radius: 4px; color: #514460; background: #eee8f4; cursor: pointer; }.cad-user-library small { font-size: 10px; }
+
+/* Job definition starts on the tooth palette, arch and action rail. */
+.db-first-palette { padding: 18px 16px 10px; }
+.db-first-palette h2 { margin: 0 0 15px; font: 400 24px Arial,sans-serif; color: #635e70; }
+.db-first-palette h4 { margin: 9px 0 4px; font: 400 12px Arial,sans-serif; }
+.db-order-details > summary { padding: 12px 16px; cursor: pointer; border-top: 1px solid #dedde0; }
+.db-project, .db-indications { background: #fafafa; }
+.db-dental-chart .db-tooth-number { left: 50%; top: 50%; bottom: auto; transform: translate(-50%,-50%); pointer-events: none; font-weight: bold; color: #49444d; text-shadow: 0 0 3px white; }
+@media(min-width:761px) {
+ .db-workbench { grid-template-columns: minmax(315px,39fr) minmax(300px,45fr) minmax(95px,16fr); }
+ .db-workbench .db-actions { background: #f2f2f3; color: #60596a; border-left: 1px solid #ddd; }
+ .dentaldb-intake .db-actions .btn { color: #51485e; justify-content: flex-start; flex-direction: row; }
+ .db-chart-region .db-dental-chart { width: min(100%,560px); }
+}

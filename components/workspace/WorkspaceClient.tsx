@@ -44,6 +44,7 @@ export default function WorkspaceClient() {
     const root = rootRef.current;
     if (!root || bootedRef.current) return;
 
+    root.style.visibility = "hidden";
     root.innerHTML = workspaceHtml;
     delete document.documentElement.dataset.faucharWorkspace;
     document.documentElement.classList.add("js");
@@ -59,7 +60,9 @@ export default function WorkspaceClient() {
         window.history.replaceState(null, "", `/workspace${legacy === "/dashboard" ? "" : legacy}`);
       }
       initViewer();
-      initWorkspaceApp();
+      Promise.resolve(initWorkspaceApp()).then(() => {
+        if (root.isConnected) root.style.visibility = "visible";
+      }).catch((error) => setBootError(error.message || "Workspace failed to start."));
     } catch (err) {
       console.error(err);
       setBootError((err as Error).message || "Workspace failed to start.");
@@ -68,6 +71,8 @@ export default function WorkspaceClient() {
 
     return () => {
       delete document.documentElement.dataset.faucharWorkspace;
+      delete document.documentElement.dataset.dentalSession;
+      delete document.documentElement.dataset.dentalIntake;
       bootedRef.current = false;
       root.innerHTML = "";
     };

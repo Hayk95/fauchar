@@ -2,7 +2,8 @@ import os, io, base64, time
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
+from scipy import ndimage
 import numpy as np
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -72,7 +73,7 @@ def build_model():
 async def load_model():
     global model
     if not os.path.exists(MODEL_PATH):
-        print(f"⚠️  Model file not found: {MODEL_PATH} — running in DEMO mode")
+        print(f"⚠️  Model file not found: {MODEL_PATH} — inference unavailable")
         return
 
     print(f"🔄 Loading model from {MODEL_PATH} ...")
@@ -102,7 +103,7 @@ async def load_model():
         state = checkpoint.state_dict()
 
     if state is None:
-        print("⚠️  Could not find weights in checkpoint — DEMO mode")
+        print("⚠️  Could not find weights in checkpoint — inference unavailable")
         return
 
     # Strip possible DataParallel prefixes
@@ -111,7 +112,7 @@ async def load_model():
         nk = k[7:] if k.startswith("module.") else k
         cleaned[nk] = v
 
-    missing, unexpected = net.load_state_dict(cleaned, strict=False)
+    missing, unexpected = net.load_state_dict(cleaned, strict=True)
     if missing:
         print(f"Missing keys ({len(missing)}): {missing[:8]}...")
     if unexpected:
@@ -129,13 +130,13 @@ def root():
         "service": "DentalOS Tooth Segmentation API",
         "model_loaded": model is not None,
         "model_type": MODEL_TYPE,
-        "status": "ready" if model else "demo_mode",
+        "status": "ready" if model else "unavailable",
     }
 
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "model": "loaded" if model else "demo"}
+    return {"status": "ok" if model is not None else "unavailable", "model": "loaded" if model is not None else "missing"}
 
 
 @app.post("/segment")
@@ -148,7 +149,7 @@ async def segment(file: UploadFile = File(...)):
     t0 = time.time()
 
     if model is None:
-        detections, annotated_b64 = _demo_response(img_pil)
+        raise HTTPException(503, "Segmentation model weights are unavailable.")
     else:
         detections, annotated_b64 = _run_pytorch(img_pil)
 
@@ -195,76 +196,44 @@ def _run_pytorch(img_pil: Image.Image):
         probs = torch.softmax(logits, dim=1)[0].cpu().numpy()
         pred = probs.argmax(axis=0)
 
+    return annotate_regions(img_pil, pred, probs)
+
+
+def annotate_regions(image, pred, probs):
+    height, width = pred.shape
+    sx, sy = image.width / width, image.height / height
+    composed = image.convert("RGBA")
     detections = []
-    annotated = img_pil.convert("RGBA")
-    overlay = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(overlay)
-    sx, sy = w / IMG_SIZE, h / IMG_SIZE
-
-    for cls_id in range(1, NUM_CLASSES):
-        mask = pred == cls_id
-        conf_map = probs[cls_id]
-        if not mask.any():
-            continue
-        ys, xs = np.where(mask)
-        conf = float(conf_map[mask].mean())
-        if conf < CONFIDENCE:
-            continue
-
-        x1 = int(xs.min() * sx)
-        y1 = int(ys.min() * sy)
-        x2 = int(xs.max() * sx)
-        y2 = int(ys.max() * sy)
-        raw_label = TOOTH_CLASSES[cls_id] if cls_id < len(TOOTH_CLASSES) else "Unknown"
-        label = fix_name(raw_label)
-        if label == "background":
-            continue
-        color = CLASS_COLORS.get(label, DEFAULT_COLOR)
-
-        detections.append({
-            "label": label,
-            "tooth_id": label,
-            "confidence": round(conf, 3),
-            "bbox": [x1, y1, x2, y2],
-            "area_px": int(mask.sum()),
-        })
-
-        # Soft color wash from resized mask
-        mask_img = Image.fromarray((mask.astype(np.uint8) * 110), mode="L").resize((w, h), Image.NEAREST)
-        color_layer = Image.new("RGBA", (w, h), (*color, 0))
-        color_layer.putalpha(mask_img)
-        overlay = Image.alpha_composite(overlay, color_layer)
-        draw = ImageDraw.Draw(overlay)
-        draw.rectangle([x1, y1, x2, y2], outline=(*color, 230), width=3)
-        text = f"{label} {conf:.0%}"
-        draw.rectangle([x1, max(0, y1 - 18), x1 + len(text) * 7 + 4, y1], fill=(*color, 220))
-        draw.text((x1 + 2, max(0, y1 - 16)), text, fill=(255, 255, 255, 255))
-
-    composed = Image.alpha_composite(annotated, overlay).convert("RGB")
-    return detections, _img_to_b64(composed)
-
-
-def _demo_response(img_pil: Image.Image):
-    draw = ImageDraw.Draw(img_pil)
-    w, h = img_pil.size
-
-    mock = [
-        {"label": "Molars", "tooth_id": "Molars", "confidence": 0.91, "bbox": [int(w * 0.1), int(h * 0.15), int(w * 0.25), int(h * 0.45)]},
-        {"label": "Premolars", "tooth_id": "Premolars", "confidence": 0.87, "bbox": [int(w * 0.3), int(h * 0.15), int(w * 0.45), int(h * 0.45)]},
-        {"label": "Incisors", "tooth_id": "Incisors", "confidence": 0.93, "bbox": [int(w * 0.42), int(h * 0.1), int(w * 0.58), int(h * 0.42)]},
-        {"label": "Canines", "tooth_id": "Canines", "confidence": 0.85, "bbox": [int(w * 0.6), int(h * 0.15), int(w * 0.72), int(h * 0.45)]},
-        {"label": "Filling", "tooth_id": "Filling", "confidence": 0.78, "bbox": [int(w * 0.3), int(h * 0.55), int(w * 0.45), int(h * 0.80)]},
-    ]
-
-    for d in mock:
-        x1, y1, x2, y2 = d["bbox"]
-        color = CLASS_COLORS.get(d["label"], DEFAULT_COLOR)
-        draw.rectangle([x1, y1, x2, y2], outline=color, width=3)
-        text = f"{d['label']} {d['confidence']:.0%}"
-        draw.rectangle([x1, y1 - 18, x1 + len(text) * 7 + 4, y1], fill=color)
-        draw.text((x1 + 2, y1 - 16), text, fill="white")
-
-    return mock, _img_to_b64(img_pil)
+    for cls_id, label in enumerate(TOOTH_CLASSES[1:], 1):
+        pixels = (pred == cls_id) & (probs[cls_id] >= CONFIDENCE)
+        components, _ = ndimage.label(pixels)
+        for index, bounds in enumerate(ndimage.find_objects(components), 1):
+            if bounds is None:
+                continue
+            region = components[bounds] == index
+            area = int(region.sum())
+            if area < 4:
+                continue
+            rows, cols = bounds
+            box = [int(cols.start * sx), int(rows.start * sy),
+                   min(image.width, int(np.ceil(cols.stop * sx))),
+                   min(image.height, int(np.ceil(rows.stop * sy)))]
+            mask = Image.fromarray(region.astype(np.uint8) * 255).resize(
+                (box[2] - box[0], box[3] - box[1]), Image.Resampling.NEAREST)
+            # Pad first so the outline follows edges touching the crop boundary.
+            padded = Image.new("L", (mask.width + 2, mask.height + 2))
+            padded.paste(mask, (1, 1))
+            interior = padded.filter(ImageFilter.MinFilter(3)).crop((1, 1, mask.width + 1, mask.height + 1))
+            alpha = np.where(np.asarray(mask) > np.asarray(interior), 235, np.asarray(mask) // 3).astype(np.uint8)
+            layer = Image.new("RGBA", mask.size, CLASS_COLORS[label])
+            layer.putalpha(Image.fromarray(alpha))
+            composed.alpha_composite(layer, (box[0], box[1]))
+            number = len(detections) + 1
+            detections.append({"label": label, "instance_id": number, "tooth_id": None,
+                               "confidence": round(float(probs[cls_id][bounds][region].mean()), 3),
+                               "bbox": box, "area_px": round(area * sx * sy)})
+            ImageDraw.Draw(composed).text((box[0], box[1]), str(number), fill="white", stroke_width=1, stroke_fill="black")
+    return detections, _img_to_b64(composed.convert("RGB"))
 
 
 def _img_to_b64(img: Image.Image) -> str:
