@@ -371,3 +371,184 @@ html[data-dental-session] .shell { inset: 0; }
 .dental-cad:not(.is-session) .props, .dental-cad:not(.is-session) .vp-views, .dental-cad:not(.is-session) .vp-status,
 .dental-cad:not(.is-session) .cad-ribbon, .dental-cad:not(.is-session) .cad-legend { display: none; }
 .dental-cad:not(.is-session) .vp { grid-column: 1 / -1; grid-row: 1 / -1; }
+
+/* =====================================================================================
+ * Dark theme for the dental workspace (appointment, tooth dialog, CAD). Layout is unchanged;
+ * only colours, surfaces and controls. One accent (FAUCHAR lime) for primary and current state.
+ * ===================================================================================== */
+:root {
+  --dk-bg: #0d1015; --dk-panel: #151920; --dk-card: #1b2028; --dk-raised: #222833; --dk-hover: #2a313d;
+  --dk-line: #262c37; --dk-line2: #343c4a; --dk-text: #e8ebf1; --dk-dim: #a3acba; --dk-faint: #727c8b;
+  --dk-accent: #c4f05c; --dk-accent-2: #d6f78a; --dk-on-accent: #11160a; --dk-warn: #f0b860; --dk-bad: #ff8a80; --dk-good: #8fe3a2;
+  --dk-shadow: 0 10px 30px #00000066, 0 1px 0 #ffffff08 inset;
+}
+
+/* ---- CAD session ---- */
+.dental-cad {
+  --bg: var(--dk-panel); --bg-2: var(--dk-card); --panel: var(--dk-card); --panel-2: var(--dk-raised);
+  --text: var(--dk-text); --dim: var(--dk-dim); --faint: var(--dk-faint); --white: #fff;
+  --line: var(--dk-line); --line-2: var(--dk-line2); --hover: var(--dk-hover); --lime: var(--dk-accent);
+  --lime-dim: #3a4a1c; --charcoal: var(--dk-bg); --r: 6px;
+  color-scheme: dark; background: var(--dk-bg); color: var(--dk-text);
+}
+.dental-cad .vp { background: radial-gradient(ellipse at 52% 38%, #2b3341 0%, #1a1f28 52%, #0d1015 100%); }
+.dental-cad .props { background: #151920f2; border: 1px solid var(--dk-line2); border-radius: 10px; box-shadow: var(--dk-shadow); backdrop-filter: blur(6px); }
+.dental-cad .dental-wizard-head { background: linear-gradient(#1f2530, #191e26); border-bottom: 1px solid var(--dk-line2); }
+.dental-wizard-head strong { color: #fff; }
+.dental-wizard-head > span { color: var(--dk-accent); }
+.dental-wizard-head p { color: var(--dk-dim); }
+.dental-cad .cad-panel-head h3 { color: var(--dk-dim); }
+.dental-cad .cad-note-warn { color: var(--dk-warn); }
+.dental-cad .cad-margin-guide { border-left-color: var(--dk-accent); background: #1f2618; color: #dfe9c9; border-radius: 0 6px 6px 0; }
+.dental-cad .is-good { color: var(--dk-good); }
+.dental-cad .is-bad { color: var(--dk-bad); }
+.dental-cad .btn, .dental-cad .cad-tools button, .dental-cad .cad-seg button,
+.dental-cad .cad-maps button, .dental-cad .cad-objects button {
+  border: 1px solid var(--dk-line2); background: var(--dk-raised); color: var(--dk-text); border-radius: 6px;
+  transition: background .12s, border-color .12s, color .12s;
+}
+.dental-cad .cad-seg { background: var(--dk-bg); border-color: var(--dk-line2); border-radius: 8px; }
+.dental-cad .cad-seg button { border: 0; background: none; color: var(--dk-dim); }
+.dental-cad .btn:not(:disabled):hover, .dental-cad .cad-tools button:not(:disabled):hover, .dental-cad .cad-objects button:not(:disabled):hover,
+.dental-cad .cad-maps button:not(:disabled):hover { background: var(--dk-hover); border-color: #475163; }
+.dental-cad .btn-primary, .dental-cad button[aria-pressed="true"], .dental-cad .cad-seg button[aria-pressed="true"] {
+  background: var(--dk-accent); color: var(--dk-on-accent); border-color: var(--dk-accent); box-shadow: none; font-weight: 600;
+}
+.dental-cad .btn-primary:not(:disabled):hover { background: var(--dk-accent-2); border-color: var(--dk-accent-2); }
+.dental-cad .props-tabs { background: var(--dk-panel); border-bottom-color: var(--dk-line2); }
+.dental-cad .props-tabs button { background: none; border-bottom: 2px solid transparent; color: var(--dk-dim); }
+.dental-cad .props-tabs button[aria-selected="true"] { background: none; color: #fff; border-bottom-color: var(--dk-accent); }
+.dental-cad input[type="number"], .dental-cad select, .dental-cad .cad-num input, .dental-cad .cad-step input {
+  background: var(--dk-bg); border: 1px solid var(--dk-line2); color: var(--dk-text); border-radius: 6px;
+}
+.dental-cad input[type="range"], .dental-cad input[type="checkbox"] { accent-color: var(--dk-accent); }
+.dental-cad .dental-wizard-footer { background: #171b22; border-top: 1px solid var(--dk-line2); }
+.dental-wizard-footer button { border: 1px solid var(--dk-line2); border-radius: 6px; background: var(--dk-raised); color: var(--dk-text); }
+.dental-wizard-footer button:not(:disabled):hover { background: var(--dk-hover); }
+.dental-wizard-footer button[data-session="next"] { background: var(--dk-accent); border-color: var(--dk-accent); color: var(--dk-on-accent); font-weight: 600; }
+.dental-cad button:focus-visible, .dental-cad input:focus-visible, .dental-cad select:focus-visible { outline: 2px solid var(--dk-accent); outline-offset: 2px; }
+.dental-cad .dental-layers { background: #12161c; border-bottom: 1px solid var(--dk-line); }
+.dental-layers label { background: var(--dk-card); border: 1px solid var(--dk-line2); border-radius: 6px; color: var(--dk-text); }
+.dental-layers input[type="range"], .dental-layers input[type="checkbox"] { accent-color: var(--dk-accent); }
+.dental-layers > button { border: 1px solid var(--dk-line2); background: var(--dk-raised); color: var(--dk-text); border-radius: 6px; }
+.dental-cad .dental-commands { background: #12161c; border-left: 1px solid var(--dk-line); }
+.dental-commands button { color: var(--dk-dim); border-radius: 8px; }
+.dental-commands button span { color: var(--dk-text); }
+.dental-commands button:hover { background: var(--dk-hover); color: #fff; }
+.dental-commands button[aria-pressed="true"] { background: #2a3420; border-color: var(--dk-accent); color: var(--dk-accent); }
+.dental-commands button[aria-pressed="true"] span { color: var(--dk-accent); }
+.dental-cad.is-session .cad-ribbon { background: #12161c; border-top: 1px solid var(--dk-line); border-bottom: 1px solid var(--dk-line); }
+.dental-cad .cad-ribbon-tools button { color: var(--dk-dim); border: 1px solid transparent; border-radius: 6px; background: none; }
+.dental-cad .cad-ribbon-tools button:hover { color: #fff; background: var(--dk-hover); }
+.dental-cad .cad-ribbon-tools button[aria-pressed="true"] { color: var(--dk-on-accent); background: var(--dk-accent); border-color: var(--dk-accent); }
+.dental-cad .cad-status { color: var(--dk-dim); }
+.dental-cad .dental-workflow { background: #0f1217; border-top: 1px solid var(--dk-line); gap: 4px; }
+.dental-workflow button { border: 1px solid var(--dk-line); border-radius: 8px; background: var(--dk-card); color: var(--dk-dim); }
+.dental-workflow button span { color: var(--dk-faint); }
+.dental-workflow button:not(:disabled):hover { background: var(--dk-hover); color: #fff; }
+.dental-workflow button[aria-current="step"] { color: var(--dk-on-accent); background: var(--dk-accent); border-color: var(--dk-accent); font-weight: 600; }
+.dental-workflow button[aria-current="step"] span { color: #3d4d14; }
+.dental-cad .vp-views { background: #151920e6; border: 1px solid var(--dk-line2); border-radius: 8px; }
+.dental-cad .vp-views button { color: var(--dk-dim); }
+.dental-cad .vp-views button:hover, .dental-cad .vp-views button[aria-pressed="true"] { color: var(--dk-on-accent); background: var(--dk-accent); }
+.dental-cad .vp-status { background: #12161cdc; color: var(--dk-dim); border-color: var(--dk-line2); }
+.dental-cad .vp-overlay { color: var(--dk-dim); background: #0d1015cc; }
+.dental-cad .vp-tooth-label { border-color: var(--dk-accent); background: #151920e0; color: #fff; }
+.dental-cad .cad-legend { background: #151920ee; color: var(--dk-dim); border-color: var(--dk-line2); border-radius: 8px; }
+.cad-anatomy-library button { border: 1px solid var(--dk-line2); color: var(--dk-dim); background: var(--dk-card); border-radius: 8px; }
+.cad-anatomy-library button[aria-pressed="true"] { border: 2px solid var(--dk-accent); background: #222a18; color: #fff; }
+.cad-user-library button { border: 1px solid var(--dk-line2); color: var(--dk-text); background: var(--dk-card); border-radius: 8px; }
+
+/* ---- Appointment (DentalDB project window) ---- */
+html[data-dental-intake] body, html[data-dental-intake] .view { background: var(--dk-bg); }
+.job-intake.dentaldb-intake {
+  --bg: var(--dk-bg); --bg-2: var(--dk-panel); --panel: var(--dk-panel); --panel-2: var(--dk-card);
+  --text: var(--dk-text); --dim: var(--dk-dim); --faint: var(--dk-faint); --white: #fff;
+  --line: var(--dk-line); --line-2: var(--dk-line2); --hover: var(--dk-hover); --lime: var(--dk-accent); --charcoal: var(--dk-bg); --r: 6px;
+  color-scheme: dark; background: var(--dk-bg); color: var(--dk-text);
+}
+.dentaldb-intake .field > span { color: var(--dk-dim); }
+.dentaldb-intake .field input, .dentaldb-intake .field select, .dentaldb-intake .field textarea, .dentaldb-intake select.select {
+  background: var(--dk-bg); border: 1px solid var(--dk-line2); border-radius: 6px; color: var(--dk-text);
+}
+.dentaldb-intake .field input:focus, .dentaldb-intake .field textarea:focus, .dentaldb-intake select:focus { border-color: var(--dk-accent); outline: none; }
+.dentaldb-intake .btn { border: 1px solid var(--dk-line2); border-radius: 6px; background: var(--dk-raised); color: var(--dk-text); }
+.dentaldb-intake .btn:not(:disabled):hover { background: var(--dk-hover); }
+.dentaldb-intake .btn-primary { background: var(--dk-accent); border-color: var(--dk-accent); color: var(--dk-on-accent); font-weight: 600; }
+.dentaldb-intake .btn-primary:not(:disabled):hover { background: var(--dk-accent-2); }
+.dentaldb-intake .btn:focus-visible, .dentaldb-intake input:focus-visible, .dentaldb-intake select:focus-visible { outline-color: var(--dk-accent); }
+.db-application-bar { background: #0a0d11; border-bottom: 1px solid var(--dk-line); color: var(--dk-dim); }
+.db-brand { color: #fff; }
+.db-brand::first-letter { color: var(--dk-accent); }
+.db-job-caption { color: var(--dk-faint); }
+.db-workbench { background: var(--dk-bg); gap: 10px; padding: 10px; }
+.db-project, .db-indications, .db-actions { background: var(--dk-panel); border: 1px solid var(--dk-line); border-radius: 12px; }
+.db-project { border-right: 1px solid var(--dk-line); }
+.db-panel-heading h2, .db-indications-heading h2, .db-project > .db-panel-heading h2, .dentaldb-intake .db-actions h2 { color: #fff; }
+.db-material-config { background: var(--dk-card); border-color: var(--dk-line2); color: var(--dk-dim); border-radius: 999px; }
+.db-project-tools .btn { background: var(--dk-card); }
+.db-project-tools .ico { color: var(--dk-dim); }
+.db-project-message, .db-chart-help { color: var(--dk-faint); }
+.db-preview { border-color: var(--dk-line2); background: var(--dk-card); border-radius: 8px; overflow: hidden; }
+.db-preview-tabs { border-bottom-color: var(--dk-line); color: var(--dk-dim); }
+.db-preview-tabs strong { background: var(--dk-card); color: var(--dk-text); }
+.db-preview-content { background: #0a0d11; color: var(--dk-dim); }
+.db-preview-empty { border-color: #3a4352; }
+.db-project-state { background: #182014; color: #cfe9a6; border-top: 1px solid var(--dk-line); border-radius: 0 0 12px 12px; }
+.db-state-dot { background: var(--dk-accent); }
+.db-state-dot.pending { background: #3a4352; }
+.db-tooth { --tooth-fill: #1f2530; --tooth-stroke: #4a5465; }
+.db-tooth:hover .db-tooth-outline { fill: #2a3240; stroke: #8f9bb0; }
+.db-tooth.assigned .db-tooth-outline { stroke: #00000080; }
+.db-tooth[aria-pressed="true"] .db-tooth-outline { stroke: var(--dk-accent); stroke-width: .7; }
+.db-tooth[aria-pressed="true"] { filter: drop-shadow(0 0 6px #c4f05c55); }
+.db-dental-chart .db-tooth .db-tooth-number { color: #b9c1ce; }
+.db-tooth.assigned .db-tooth-number { color: #fff; }
+.db-legend { color: var(--dk-text); }
+.db-legend-empty { color: var(--dk-faint); }
+.db-shade-field, .db-antagonist { color: var(--dk-dim); }
+.db-antagonist input, .dentaldb-intake input[type="checkbox"] { accent-color: var(--dk-accent); }
+.dentaldb-intake .db-actions { background: var(--dk-panel); }
+.dentaldb-intake .db-actions .btn { color: var(--dk-text); background: none; border: 0; border-radius: 8px; }
+.dentaldb-intake .db-actions .btn:not(:disabled):hover { background: var(--dk-hover); }
+.dentaldb-intake .db-actions hr { border-top-color: var(--dk-line); }
+.db-bottom-bar { background: #0a0d11; border-top: 1px solid var(--dk-line); color: var(--dk-faint); }
+.db-step-heading { border-bottom-color: var(--dk-line); }
+.db-step-heading h1 { color: #fff; }
+.db-step-heading span { color: var(--dk-faint); }
+.dentaldb-intake .panel { background: var(--dk-panel); border: 1px solid var(--dk-line); border-radius: 12px; }
+.job-hint, .job-scan-needs span { color: var(--dk-faint); }
+.job-scan-needs li { border-bottom-color: var(--dk-line); }
+.job-file { background: var(--dk-card); border: 1px solid var(--dk-line2); border-radius: 8px; }
+.job-review-table .table { color: var(--dk-text); }
+
+/* ---- Tooth dialog ---- */
+.db-tooth-dialog { background: var(--dk-panel); color: var(--dk-dim); border: 1px solid var(--dk-line2); border-radius: 14px; box-shadow: 0 30px 90px #000a; }
+.db-tooth-dialog::backdrop { background: #05070acc; backdrop-filter: blur(2px); }
+.db-dialog-title { background: var(--dk-panel); }
+.db-dialog-title h2 { color: #fff; }
+.db-dialog-title > span { color: var(--dk-faint); }
+.db-dialog-title .btn:first-child { color: var(--dk-text); }
+.db-dialog-columns > section + section { border-left-color: var(--dk-line); }
+.db-dialog-columns h3 { color: #fff; }
+.db-dialog-columns h4, .db-implant-options legend { color: var(--dk-dim); }
+.db-type-grid button { border-radius: 6px; }
+.db-type-grid button[aria-pressed="true"], .db-material-list button[aria-pressed="true"], .db-shade-row button[aria-pressed="true"] { outline: 2px solid var(--dk-accent); outline-offset: 1px; }
+.db-type-grid button[aria-pressed="true"]:after, .db-material-list button[aria-pressed="true"]:after { color: var(--dk-on-accent); background: var(--dk-accent); border-radius: 50%; padding: 0 3px; }
+.db-material-list button { background: var(--dk-card); border: 1px solid var(--dk-line2); color: var(--dk-text); border-radius: 8px; }
+.db-material-list button:hover { border-color: #475163; }
+.db-dialog-columns select.select { background: var(--dk-bg); border: 1px solid var(--dk-line2); color: var(--dk-text); border-radius: 6px; }
+.db-option-tiles button, .db-option-tiles label, .db-fixed-option { border-color: #00000040; border-radius: 6px; }
+.db-option-tiles button:disabled { color: #8a93a3; background: var(--dk-card); }
+.db-implant-options button:disabled { color: #ffffffb0; }
+.db-primary-parameters output { color: var(--dk-faint); }
+.db-primary-parameters input { accent-color: var(--dk-accent); }
+.db-dialog-parameters { border-top-color: var(--dk-line); }
+.db-dialog-parameters summary { color: var(--dk-accent); }
+.db-dialog-parameters input { background: var(--dk-bg); border-color: var(--dk-line2); color: var(--dk-text); border-radius: 6px; }
+.db-shade-row > span { color: var(--dk-faint); }
+.db-shade-row button { border-radius: 4px; border-color: #00000030; color: #3a3022; }
+.db-column-wait { border-color: var(--dk-line2); color: var(--dk-faint); border-radius: 10px; }
+.db-tooth-dialog footer { background: var(--dk-panel); border-top-color: var(--dk-line); }
+.db-tooth-dialog footer .btn { border-radius: 8px; }
+.db-shade-row { grid-template-columns: 22px repeat(5, minmax(0, 48px)); }

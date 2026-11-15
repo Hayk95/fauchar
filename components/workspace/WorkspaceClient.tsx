@@ -120,7 +120,7 @@ export default function WorkspaceClient() {
   }
 
   const kind = bootKind(pathname || "");
-  const background = kind === "intake" ? "#f7f7f8" : kind === "case" ? "#4f3b64" : "#0B1114";
+  const background = kind === "intake" || kind === "case" ? "#0d1015" : "#0B1114";
   return (
     <div ref={rootRef} id="workspace-root" style={{ minHeight: "100vh", background }}>
       <BootScreen kind={kind} />
