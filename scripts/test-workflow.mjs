@@ -209,6 +209,51 @@ test("all original morphology styles change only the outer shape and preserve cl
   assert.throws(() => createCrown({ ...payload, anatomyStyle: "unknown" }), /anatomy style/);
 });
 
+test("tooth library lifts a full anatomic crown off the margin and keeps the preparation side", async () => {
+  const { TOOTH_LIBRARY, libraryHeightMm } = await import("../lib/client/cad/anatomy-library.js");
+  const plain = createCrown({ ...payload, tooth: 46, segments: 48, rings: 12 });
+  const heightOf = (mesh) => {
+    const z = mesh.frame.occlusal, c = mesh.frame.center;
+    let max = -Infinity;
+    for (let i = 0; i < mesh.positions.length; i += 3) {
+      if (mesh.seg.intaglio[i / 3]) continue;
+      const h = (mesh.positions[i] - c[0]) * z[0] + (mesh.positions[i + 1] - c[1]) * z[1] + (mesh.positions[i + 2] - c[2]) * z[2];
+      if (h > max) max = h;
+    }
+    return max;
+  };
+  const plainInner = [...plain.seg.intaglio].flatMap((yes, i) => yes ? [...plain.positions.slice(i * 3, i * 3 + 3)] : []);
+  const plainHeight = heightOf(plain);
+  const shapes = [];
+  for (const item of TOOTH_LIBRARY) {
+    const result = createCrown({ ...payload, tooth: 46, libraryId: item.id, relief: 1, segments: 48, rings: 12 });
+    assert.equal(result.stats.closed, true);
+    assert.equal(result.stats.degenerate, 0);
+    assert.equal(result.source.type, "anatomic-library");
+    assert.equal(result.source.libraryId, item.id);
+    const inner = [...result.seg.intaglio].flatMap((yes, i) => yes ? [...result.positions.slice(i * 3, i * 3 + 3)] : []);
+    assert.deepEqual(inner, plainInner);
+    shapes.push([...result.positions].join(","));
+    if (item.id === "standard") {
+      assert.ok(heightOf(result) > plainHeight + 2, "the library tooth stands above the smooth shell");
+      const z = result.frame.occlusal, c = result.frame.center;
+      let cusp = -Infinity, fossa = -Infinity;
+      for (let i = 0; i < result.positions.length; i += 3) {
+        if (result.seg.intaglio[i / 3]) continue;
+        const p = [result.positions[i], result.positions[i + 1], result.positions[i + 2]];
+        const h = (p[0] - c[0]) * z[0] + (p[1] - c[1]) * z[1] + (p[2] - c[2]) * z[2];
+        const radial = Math.hypot(p[0] - c[0] - z[0] * h, p[1] - c[1] - z[1] * h, p[2] - c[2] - z[2] * h);
+        if (h > cusp) cusp = h;
+        if (radial < 0.35 && h > fossa) fossa = h;
+      }
+      assert.ok(cusp > fossa + 1.2, "cusps stand above the central groove");
+    }
+  }
+  assert.equal(new Set(shapes).size, TOOTH_LIBRARY.length, "each library form changes the mesh");
+  assert.ok(libraryHeightMm(46, "youthful", .32, -.35) > libraryHeightMm(46, "worn", .32, -.35) + 1);
+  assert.throws(() => createCrown({ ...payload, libraryId: "copied" }), /tooth library/);
+});
+
 test("user library validates actual STL geometry and rejects unsafe imports", async () => {
   const { validateLibraryMesh } = await import("../lib/client/cad/restoration-library.js");
   const crown = createCrown({ ...payload, segments: 48, rings: 12 });

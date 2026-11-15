@@ -204,6 +204,7 @@ test("library and morphology panels render through the real editor with valid to
   ed.tool = "library"; renderPanel(ed);
   assert.ok(ed.panelEl.querySelector("[data-library-import]"));
   ed.tool = "construction"; renderPanel(ed);
-  assert.equal(ed.panelEl.querySelectorAll("[data-anatomy-style]").length, 4);
+  assert.equal(ed.panelEl.querySelectorAll("[data-tooth-library]").length, 4);
+  assert.equal(ed.panelEl.querySelector("[data-tooth-library='standard'][aria-pressed='true']").textContent, "Standard");
   ed.kernel.dispose(); clearTimeout(ed.saveTimer);
 });
