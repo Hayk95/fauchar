@@ -552,3 +552,9 @@ html[data-dental-intake] body, html[data-dental-intake] .view { background: var(
 .db-tooth-dialog footer { background: var(--dk-panel); border-top-color: var(--dk-line); }
 .db-tooth-dialog footer .btn { border-radius: 8px; }
 .db-shade-row { grid-template-columns: 22px repeat(5, minmax(0, 48px)); }
+.dental-cad .cad-btn-row { display: flex; gap: 6px; align-items: center; }
+.dental-cad .cad-btn-row .btn { flex: 1; }
+.dental-cad .cad-row-label { min-width: 34px; font-size: 11px; color: var(--dk-dim); }
+.dental-cad canvas[data-cad-tool="transform"] { cursor: grab; }
+.dental-cad canvas[data-cad-drag="move"] { cursor: grabbing; }
+.dental-cad canvas[data-cad-drag="rotate"] { cursor: crosshair; }
