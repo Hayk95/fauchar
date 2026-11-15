@@ -120,14 +120,15 @@ html[data-dental-session] .topnav, html[data-dental-session] .ws-select { displa
 /* Desktop DentalDB-style project window. The arch is original SVG geometry. */
 html[data-dental-intake] .topbar, html[data-dental-intake] .sidebar { display: none; }
 html[data-dental-intake] .shell { inset: 0; grid-template-columns: minmax(0, 1fr); }
+html[data-dental-intake] .view { display: flex; flex-direction: column; }
 .job-intake.dentaldb-intake {
-  --bg: #e5e5e8; --bg-2: #d8d8dc; --panel: #eeeef0; --panel-2: #dddde1;
-  --text: #28252d; --dim: #57515f; --faint: #655d6e; --white: #25222a;
-  --line: #bdbac3; --line-2: #9c96a5; --hover: #e0dbe6;
-  --lime: #efbc69; --charcoal: #2b241b; --r: 3px;
-  font: 400 12px/1.4 Arial, sans-serif; color: #28252d; color-scheme: light;
-  width: 100%; max-width: none; margin: 0; padding: 0; min-height: 100%;
-  background: #e2e2e5;
+  --bg: #f7f7f8; --bg-2: #ececee; --panel: #f7f7f8; --panel-2: #fff;
+  --text: #2c2a30; --dim: #5c5862; --faint: #7a7560; --white: #2c2a30;
+  --line: #e1e1e4; --line-2: #cfcfd3; --hover: #f3f3f5;
+  --lime: #3caf4a; --charcoal: #2c2a30; --r: 3px;
+  font: 400 12px/1.4 Arial, sans-serif; color: #2c2a30; color-scheme: light;
+  width: 100%; max-width: none; margin: 0; padding: 0; min-height: 0; height: 100%;
+  display: flex; flex-direction: column; background: #f7f7f8;
 }
 .dentaldb-intake * { box-sizing: border-box; }
 .dentaldb-intake .field { display: grid; gap: 4px; min-width: 0; }
@@ -139,66 +140,71 @@ html[data-dental-intake] .shell { inset: 0; grid-template-columns: minmax(0, 1fr
 .dentaldb-intake .btn-primary { background: linear-gradient(#baa6cc, #82689c); border-color: #78608c; color: #fff; }
 .dentaldb-intake button:disabled { opacity: .45; cursor: not-allowed; }
 .dentaldb-intake .btn:focus-visible, .dentaldb-intake input:focus-visible, .dentaldb-intake select:focus-visible { outline: 2px solid #8d68ad; outline-offset: 2px; }
-.db-application-bar { display: flex; gap: 12px; align-items: center; min-height: 34px; padding: 7px 14px; color: #eee7f4; background: linear-gradient(#554261, #392c46); border-bottom: 1px solid #2a1b36; }
-.db-brand { font-size: 13px; font-weight: 600; letter-spacing: 2px; }
-.db-job-caption { margin-left: auto; color: #d6c9e2; font-size: 11px; }
-.db-workbench { display: grid; grid-template-columns: clamp(245px, 24vw, 330px) minmax(0, 1fr) 108px; min-width: 0; }
-.db-panel-heading { min-height: 36px; padding: 9px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; background: linear-gradient(#fafafa, #d4d3d8); border-bottom: 1px solid #b5b1bd; }
-.db-panel-heading h2 { font: 600 13px Arial, sans-serif; }
-.db-project { min-width: 0; border-right: 1px solid #b5b0bd; background: #e9e8ec; display: flex; flex-direction: column; }
-.db-project > .db-panel-heading { display: block; padding: 10px; }
-.db-project-tools { display: flex; gap: 3px; margin-top: 9px; }
-.db-project-tools .btn { flex: 1; height: 46px; display: flex; flex-direction: column; padding: 5px 2px; font-size: 10px; min-width: 0; }
-.db-project-tools .ico { width: 19px; height: 19px; color: #746180; }
-.db-project-body { padding: 10px 12px 14px; display: grid; gap: 11px; }
+.db-application-bar { display: flex; gap: 12px; align-items: center; min-height: 30px; padding: 6px 14px; color: #6a6570; background: #f7f7f8; border-bottom: 1px solid #e6e6e8; }
+.db-brand { font-size: 12px; font-weight: 700; letter-spacing: 1.6px; color: #3a3842; }
+.db-job-caption { margin-left: auto; color: #8a8492; font-size: 11px; }
+.db-workbench { display: grid; grid-template-columns: 300px minmax(0, 1fr) 108px; min-width: 0; min-height: 0; flex: 1; background: #fff; }
+.db-panel-heading { min-height: 0; padding: 16px 16px 4px; display: block; background: transparent; border-bottom: 0; }
+.db-panel-heading h2 { font: 600 15px/1.2 Arial, sans-serif; color: #3a3842; }
+.db-project { min-width: 0; border-right: 1px solid #e4e4e6; background: #f3f3f4; display: flex; flex-direction: column; }
+.db-project > .db-panel-heading { display: block; padding: 16px 14px 8px; }
+.db-project-tools { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; margin-top: 10px; }
+.db-project-tools .btn { height: 48px; display: flex; flex-direction: column; padding: 4px 2px; font-size: 10px; min-width: 0; background: #fff; }
+.db-project-tools .ico { width: 16px; height: 16px; color: #6d6874; }
+.db-project-body { padding: 8px 14px 12px; display: grid; gap: 9px; }
 .db-project-message { color: #706778; font-size: 11px; min-height: 28px; }
 .db-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
 .db-notes { margin-top: 2px; }
-.db-preview { margin: auto 10px 10px; border: 1px solid #aaa4b2; background: #d5d1db; }
-.db-preview-tabs { display: flex; border-bottom: 1px solid #aaa4b2; font-size: 10px; }
-.db-preview-tabs > * { flex: 1; padding: 7px 3px; text-align: center; font-weight: 400; }
-.db-preview-tabs strong { background: #f0edf4; color: #51405f; }
-.db-preview-tabs span { color: #7b7284; background: #d9d5df; }
-.db-preview-content { min-height: 140px; padding: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 12px; background: radial-gradient(ellipse, #ddd7e6, #bcb3c9); color: #665b72; }
-.db-preview-content .ico { width: 30px; height: 30px; opacity: .55; }
-.db-project-state { display: flex; align-items: center; gap: 5px; padding: 7px 6px; background: #e9e6ee; font-size: 10px; }
-.db-state-dot { width: 7px; height: 7px; border-radius: 50%; background: #64a079; margin-left: 4px; }
-.db-state-dot.pending { background: #bbb4c5; }
-.db-indications { min-width: 0; background: #e5e4e8; }
+.db-preview { margin: 4px 14px 0; border: 1px solid #dddde0; background: #fff; }
+.db-preview-tabs { display: flex; border-bottom: 1px solid #e4e4e6; font-size: 10px; color: #7a756e; }
+.db-preview-tabs > * { flex: 1; padding: 6px 3px; text-align: center; font-weight: 400; }
+.db-preview-tabs strong { background: #fff; color: #3f3c46; }
+.db-preview-tabs span { color: #8b8792; background: #f6f6f7; }
+.db-preview-content { min-height: 96px; padding: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px; background: #1b1b1d; color: #c8c8cc; }
+.db-preview-empty { width: 58px; height: 30px; border: 2px solid #8e8e93; border-radius: 40%; }
+.db-project-state { display: flex; align-items: center; gap: 6px; margin-top: auto; padding: 8px 12px; background: #e7f6ea; color: #246b34; font-size: 11px; }
+.db-state-dot { width: 8px; height: 8px; border-radius: 50%; background: #3caf4a; }
+.db-state-dot.pending { background: #c8c8cc; }
+.db-indications { min-width: 0; background: #fff; display: flex; flex-direction: column; }
 .db-patient-mode { font-size: 11px; color: #63576e; padding: 2px 12px; border: 1px solid #b7afc1; border-radius: 3px; background: #eeeaf3; }
-.db-chart-help { padding: 10px 15px; min-height: 42px; color: #6d6277; font-size: 11px; text-align: center; }
-.db-chart-region { padding: 0 18px 10px; min-width: 0; }
-.db-dental-chart { position: relative; width: 100%; max-width: 650px; aspect-ratio: 640 / 550; margin: 0 auto; }
+.db-chart-help { margin: 0; padding: 0 18px 2px; min-height: 0; color: #8a8492; font-size: 11px; }
+.db-job-stage { display: grid; grid-template-columns: minmax(0, 1fr) 158px; align-items: center; flex: 1; min-height: 0; padding: 0 6px 0 8px; }
+.db-chart-region { padding: 0; min-width: 0; min-height: 0; height: 100%; display: grid; place-items: center; container-type: size; }
+.db-legend { list-style: none; margin: 0; padding: 0 8px 0 0; display: grid; gap: 9px; align-content: center; color: #4a4652; font-size: 12px; }
+.db-legend li { display: flex; align-items: center; gap: 8px; }
+.db-legend li::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--swatch, #ddd); box-shadow: inset 0 0 0 1px #00000018; }
+.db-legend .role-crown { --swatch: #3caf4a; }
+.db-legend .role-pontic { --swatch: #e15b6a; }
+.db-legend .role-adjacent { --swatch: #e0a322; }
+.db-legend .role-antagonist { --swatch: #b7b9be; }
+.db-job-foot { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; padding: 4px 18px 14px; }
+.db-shade-field { display: grid; gap: 4px; min-width: 110px; color: #5c5864; font-size: 11px; }
+.db-shade-field select { width: 120px; }
+.db-dental-chart { position: relative; width: min(100cqw, calc(100cqh * 640 / 620), 640px); aspect-ratio: 640 / 620; margin: 0 auto; }
 .db-tooth {
-  --tooth-fill: #cfccd2; --tooth-highlight: #f3f1f5; --tooth-shadow: #99949f;
-  --tooth-border: #8e8698; --tooth-fissure: #8b8494;
-  position: absolute; height: 8.6%; transform: translate(-50%, -50%); padding: 0;
+  --tooth-fill: #f7f4ee; --tooth-highlight: #fff; --tooth-shadow: #ddd6cc;
+  --tooth-border: #b7b1a8; --tooth-fissure: #c3bdb4;
+  position: absolute; transform: translate(-50%, -50%); padding: 0;
   border: 0; background: transparent; overflow: visible; color: #53485e; cursor: pointer;
 }
 .db-tooth-svg { width: 100%; height: 100%; overflow: visible; transform: rotate(var(--tooth-rotation)); }
 .db-tooth-outline { stroke: var(--tooth-border); stroke-width: .9; }
 .db-tooth-fissure { fill: none; stroke: var(--tooth-fissure); stroke-width: 1; opacity: .65; }
 .db-tooth-shine { fill: none; stroke: #fff; stroke-width: 1.4; opacity: .55; }
-.db-tooth:hover .db-tooth-outline, .db-tooth[aria-pressed="true"] .db-tooth-outline { stroke: #6d3d93; stroke-width: 2.6; }
+.db-tooth:hover .db-tooth-outline, .db-tooth[aria-pressed="true"] .db-tooth-outline { stroke: #e07a32; stroke-width: 2.4; }
 .db-tooth[aria-pressed="true"] { z-index: 3; }
-.db-tooth[aria-pressed="true"]::after { content: "✓"; position: absolute; right: -4px; top: -8px; width: 14px; height: 14px; border-radius: 50%; background: #fff; color: #c56a2d; font: 700 10px/14px Arial, sans-serif; text-align: center; box-shadow: 0 0 0 1px #e0a36a; }
 .db-tooth:focus-visible { outline: 2px solid #9863bd; outline-offset: 5px; border-radius: 8px; }
 .db-tooth-number { position: absolute; left: 50%; transform: translateX(-50%); font: 11px Arial, sans-serif; }
 .db-tooth.upper .db-tooth-number { top: -17px; }
 .db-tooth.lower .db-tooth-number { bottom: -17px; }
-.db-tooth.role-crown { --tooth-fill: #f5f0de; --tooth-highlight: #fffef6; --tooth-shadow: #c6bc9d; --tooth-border: #988c72; --tooth-fissure: #a79b78; }
-.db-tooth.role-pontic { --tooth-fill: #db7779; --tooth-highlight: #f0b0af; --tooth-shadow: #a14752; --tooth-border: #8d4654; --tooth-fissure: #994650; }
-.db-tooth.role-adjacent { --tooth-fill: #a3a7ac; --tooth-highlight: #d9dde0; --tooth-shadow: #747a83; }
-.db-tooth.role-antagonist { --tooth-fill: #a38cc0; --tooth-highlight: #d3c4e7; --tooth-shadow: #7a6298; }
-.db-arch-label { position: absolute; left: 50%; transform: translateX(-50%); font-size: 10px; color: #86788f; }
-.db-arch-label.upper { top: 7%; }
-.db-arch-label.lower { bottom: 6%; }
-.db-patient-side { position: absolute; top: 49%; color: #887c93; font-size: 10px; }
-.db-patient-side.right { left: 1%; }.db-patient-side.left { right: 1%; }
-.db-chart-center { position: absolute; left: 24%; right: 24%; top: 49%; text-align: center; color: #81748d; font-size: 11px; }
+.db-tooth.role-crown { --tooth-fill: #3caf4a; --tooth-highlight: #8ed896; --tooth-shadow: #1f7a32; --tooth-border: #1c6b2c; --tooth-fissure: #176628; }
+.db-tooth.role-pontic { --tooth-fill: #e15b6a; --tooth-highlight: #f4a8ae; --tooth-shadow: #b43344; --tooth-border: #9d3140; --tooth-fissure: #9d3140; }
+.db-tooth.role-adjacent { --tooth-fill: #e0a322; --tooth-highlight: #ffe08a; --tooth-shadow: #c48a10; --tooth-border: #a8740d; --tooth-fissure: #a8740d; }
+.db-tooth.role-antagonist { --tooth-fill: #c5c7cb; --tooth-highlight: #eeeef0; --tooth-shadow: #9a9da3; --tooth-border: #8d9096; --tooth-fissure: #8d9096; }
+.db-arch-label, .db-patient-side, .db-chart-center { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .db-connector { position: absolute; transform: translate(-50%, -50%); width: 13px; height: 13px; margin: 0; z-index: 1; cursor: pointer; accent-color: #4c9d6b; }
 .db-connector.incompatible { outline: 2px solid #be4e59; outline-offset: 0; }
-.db-chart-shortcuts { display: flex; justify-content: center; gap: 7px; margin-top: -4px; }
+.db-chart-shortcuts { display: flex; gap: 6px; margin-left: auto; }
 .db-indication-key { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 14px; font-size: 10px; margin: 12px 0 2px; color: #62566d; }
 .db-indication-key span { display: inline-flex; gap: 5px; align-items: center; }
 .db-indication-key span::before, .db-type-dot { content: ""; width: 9px; height: 9px; background: #b6b0bd; border: 1px solid #958b9f; border-radius: 2px; flex-shrink: 0; }
@@ -211,13 +217,21 @@ html[data-dental-intake] .shell { inset: 0; grid-template-columns: minmax(0, 1fr
 .db-extra-summary { font-size: 10px; color: #7c6e88; grid-column: 1 / -1; }
 .db-required-scans { padding: 8px 18px 12px; color: #62556f; font-size: 11px; }
 .db-required-scans summary { cursor: pointer; }
-.db-actions { background: linear-gradient(90deg, #38303f, #241d2c); color: #e7deee; border-left: 1px solid #766484; padding: 0 5px 12px; display: flex; flex-direction: column; gap: 5px; }
-.db-actions h2 { font: 400 12px Arial, sans-serif; padding: 11px 6px 13px; }
-.dentaldb-intake .db-actions .btn { border: 1px solid transparent; background: transparent; color: #e9e0f1; height: 76px; padding: 8px 3px; display: flex; flex-direction: column; gap: 7px; white-space: normal; text-align: center; font-size: 11px; }
-.dentaldb-intake .db-actions .btn-primary { background: linear-gradient(#8c719e, #654d7a); border-color: #af95c4; }
-.db-actions .ico { width: 29px; height: 29px; color: #deceeb; }
+.db-actions { background: #fafafa; color: #4a4652; border-left: 1px solid #e6e6e8; padding: 0 6px 12px; display: flex; flex-direction: column; gap: 2px; }
+.db-actions h2 { font: 600 15px/1.2 Arial, sans-serif; color: #3a3842; padding: 16px 4px 10px; }
+.dentaldb-intake .db-actions .btn { border: 0; background: transparent; color: #4a4652; height: auto; min-height: 68px; padding: 4px 2px; display: flex; flex-direction: column; gap: 5px; white-space: normal; text-align: center; font-size: 11px; box-shadow: none; }
+.dentaldb-intake .db-actions .btn:disabled { opacity: 1; }
+.dentaldb-intake .db-actions .btn:disabled .db-action-mark { filter: saturate(.55) brightness(1.08); }
+.db-action-mark { width: 40px; height: 40px; border-radius: 8px; display: grid; place-items: center; color: #fff; }
+.db-action-mark.scan { background: #2f7de1; }
+.db-action-mark.design { background: #e07a32; }
+.db-action-mark.model { background: #3aaa55; }
+.db-action-mark.cam { background: #6b5bd6; }
+.db-action-mark.share { background: #d4534e; }
+.db-action-mark.cases { background: #8b8794; }
+.db-actions .ico { width: 20px; height: 20px; color: #fff; }
 .db-actions .db-back { margin-top: auto; }
-.db-bottom-bar { min-height: 36px; border-top: 1px solid #b8b0c2; padding: 7px 12px; background: #d5d0dc; color: #73677e; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 11px; }
+.db-bottom-bar { min-height: 34px; border-top: 1px solid #e4e4e6; padding: 6px 12px; background: #f3f3f4; color: #6a6570; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 11px; }
 .db-bottom-bar > div { display: flex; gap: 8px; }
 .db-step-heading { padding: 15px 20px; border-bottom: 1px solid #bcb3c7; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; }
 .db-step-heading h1 { font: 500 16px Arial, sans-serif; }.db-step-heading span { color: #7b6d88; }
@@ -267,18 +281,19 @@ html[data-dental-intake] .shell { inset: 0; grid-template-columns: minmax(0, 1fr
 .db-tooth-dialog footer { position: sticky; bottom: 0; display: flex; justify-content: flex-end; gap: 10px; padding: 10px 20px; background: #fafafa; border-top: 1px solid #eee; }
 .db-tooth-dialog footer .btn { min-width: 100px; border-radius: 0; }.db-tooth-dialog footer .btn:first-child { margin-right: auto; }
 @media (max-width: 1000px) {
-  .db-workbench { grid-template-columns: 235px minmax(0, 1fr) 82px; }
-  .db-chart-region { padding: 0 8px 10px; }.db-chart-center { font-size: 10px; }
-  .db-scan-settings { grid-template-columns: minmax(0, 1fr) 75px; padding: 12px; }
+  .db-workbench { grid-template-columns: 240px minmax(0, 1fr) 92px; }
+  .db-job-stage { grid-template-columns: minmax(0, 1fr) 132px; }
 }
 @media (max-width: 760px) {
   html[data-dental-intake] .shell { position: static; margin: 0; }
-  .db-workbench { grid-template-columns: minmax(0, 1fr) 65px; }
-  .db-project { grid-column: 1 / -1; grid-row: 2; border-right: 0; border-top: 1px solid #bdb2c7; }
+  .db-workbench { grid-template-columns: minmax(0, 1fr) 84px; }
+  .db-project { grid-column: 1 / -1; grid-row: 2; border-right: 0; border-top: 1px solid #e4e4e6; }
   .db-project-body { grid-template-columns: 1fr 1fr; }.db-project-message, .db-notes { grid-column: 1 / -1; }
   .db-indications { grid-column: 1; grid-row: 1; }.db-actions { grid-column: 2; grid-row: 1; }
   .dentaldb-intake .db-actions .btn { font-size: 10px; }
-  .db-chart-region { overflow-x: auto; }.db-dental-chart { min-width: 370px; }
+  .db-job-stage { grid-template-columns: minmax(0, 1fr); }
+  .db-legend { grid-auto-flow: column; justify-content: start; padding: 0 12px 8px; }
+  .db-chart-region { overflow-x: auto; }.db-dental-chart { min-width: 340px; }
   .db-tooth-dialog { width: calc(100vw - 18px); max-height: calc(100dvh - 18px); }
   .db-dialog-columns { grid-template-columns: minmax(0, 1fr); }.db-dialog-columns > section + section { border-left: 0; border-top: 1px solid #c0b5cb; }
   .db-application-bar { gap: 8px; flex-wrap: wrap; }.db-job-caption { margin-left: 0; }
@@ -298,15 +313,5 @@ html[data-dental-intake] .shell { inset: 0; grid-template-columns: minmax(0, 1fr
 .db-first-palette h2 { margin: 0 0 15px; font: 400 24px Arial,sans-serif; color: #635e70; }
 .db-first-palette h4 { margin: 9px 0 4px; font: 400 12px Arial,sans-serif; }
 .db-order-details > summary { padding: 12px 16px; cursor: pointer; border-top: 1px solid #dedde0; }
-.db-project, .db-indications { background: #fafafa; }
-.db-dental-chart .db-tooth .db-tooth-number { left: 50%; top: 50%; bottom: auto; transform: translate(-50%, -50%); pointer-events: none; font: 700 10px/1 Arial, sans-serif; color: #3a3540; text-shadow: 0 0 3px #fff, 0 0 3px #fff; }
-.db-arch-label.upper { top: 2%; }
-.db-arch-label.lower { bottom: 1%; }
-@media(min-width:761px) {
- .db-workbench { grid-template-columns: 300px minmax(0, 1fr) 112px; }
- .db-workbench .db-actions { background: #f3f3f4; color: #4e4658; border-left: 1px solid #d7d7da; }
- .dentaldb-intake .db-actions .btn { color: #3e3648; flex-direction: column; justify-content: center; height: 74px; background: transparent; }
- .dentaldb-intake .db-actions .btn-primary { background: linear-gradient(#8c719e, #654d7a); color: #fff; }
- .db-chart-region .db-dental-chart { width: min(100%, 680px); }
- .db-project-tools { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-}
+.db-dental-chart .db-tooth .db-tooth-number { left: var(--num-left, 50%); top: var(--num-top, 50%); bottom: auto; transform: translate(-50%, -50%); pointer-events: none; font: 400 11px/1 Arial, sans-serif; color: #6a6570; text-shadow: none; }
+.db-tooth.role-crown .db-tooth-number, .db-tooth.role-pontic .db-tooth-number, .db-tooth.role-adjacent .db-tooth-number { color: #3a3842; }

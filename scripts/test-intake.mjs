@@ -125,7 +125,7 @@ test("the appointment page is the DentalDB project, arch and actions, and a toot
   const h = harness();
   try {
     assert.equal(h.view.querySelector(".db-project h2").textContent, "Project");
-    assert.equal(h.view.querySelector(".db-indications h2").textContent, "Indication and materials");
+    assert.equal(h.view.querySelector(".db-indications h2").textContent, "Job definition");
     assert.equal(h.view.querySelector(".db-actions h2").textContent, "Actions");
     assert.equal(h.view.querySelector("dialog"), null);
     assert.equal(h.view.querySelectorAll(".db-tooth[aria-pressed='true']").length, 0);

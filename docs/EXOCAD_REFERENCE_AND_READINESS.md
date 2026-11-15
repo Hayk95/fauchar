@@ -48,7 +48,7 @@ Sources:
 
 ## 2026-11-15 continuation
 
-The public DentalDB window is the appointment page: Project on the left, Indication and materials with both arches in the center, Actions on the right. Tooth numbers sit on the tooth symbols. Clicking a tooth opens the three-column definition (restoration, material, options). OK commits; Cancel leaves the saved job unchanged. A lower-right first molar, FDI 46, with an anatomic crown, zirconia and shade B2 requests a lower preparation scan and an upper antagonist scan.
+The public DentalDB window is the appointment page: Project on the left, Job definition with one oval arch in the center, Actions on the right. Tooth numbers sit outside the symbols. Clicking a tooth opens the three-column definition (restoration, material, options). OK commits; Cancel leaves the saved job unchanged. A lower-right first molar, FDI 46, with an anatomic crown, zirconia and shade B2 requests a lower preparation scan and an upper antagonist scan.
 
 The WebGL Segmentation button still calls the local arch-geometry numbering in `lib/client/cad/teeth.js`. It does not call `services/tooth-seg/app.py`. That 2D service remains a separate image-mask path. Its classes are tooth types, not FDI numbers, and `services/tooth-seg/best_model.pth` is a broken symlink: `/Users/haykmaruqyan/Downloads/best_model.pth` is not on this machine. An appointment number is used as a proposal. One detected preparation stump can receive that number. The amber highlight means it is not confirmed. A technician correction is stored with the design and reapplied when the case is reopened, provided the arch sampling length still matches.
 
