@@ -220,3 +220,24 @@ test("user library validates actual STL geometry and rejects unsafe imports", as
   const open = writeBinarySTL([{ positions: new Float32Array([0,0,0,1,0,0,0,1,0]), indices: new Uint32Array([0,1,2]) }]);
   assert.throws(() => validateLibraryMesh(open), /closed/);
 });
+
+test("ToothCraft transports a local STL and returns it to the scan frame", async () => {
+  const { scanContext, requestToothCraft } = await import("../lib/client/cad/toothcraft.js");
+  const context = scanContext(scan, payload.margin, payload.axis);
+  const local = parseBinarySTL(context.buffer);
+  assert.ok(local.indices.length > 0 && local.indices.length < scan.indices.length);
+  const original = globalThis.fetch;
+  try {
+    globalThis.fetch = async (url, options) => {
+      assert.equal(url, "http://127.0.0.1:7861/complete");
+      assert.equal(options.body, context.buffer);
+      return new Response(context.buffer);
+    };
+    const result = await requestToothCraft(context);
+    const scanVertices = new Set();
+    for (let i = 0; i < scan.positions.length; i += 3) scanVertices.add(Array.from(scan.positions.subarray(i,i+3), v => v.toFixed(2)).join(","));
+    let recovered = 0;
+    for (let i = 0; i < result.positions.length; i += 3) recovered += scanVertices.has(Array.from(result.positions.subarray(i,i+3), v => v.toFixed(2)).join(","));
+    assert.ok(recovered > result.positions.length / 3 * .99);
+  } finally { globalThis.fetch = original; }
+});
