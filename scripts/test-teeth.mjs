@@ -189,5 +189,15 @@ for (const [jawName, jaw, axis, data, gone] of [["upper", "upper", [0, 0, -1], u
   check("the same partial scan with crown 22 as anchor is numbered from it", anchored.teeth.some((t) => t.fdi === 22) && anchored.teeth.every((t) => !t.fdi || t.fdi > 20), list);
 }
 
+{
+  // Partial lower arch whose 46 preparation keeps its width but lost its height (Y-up fixture).
+  const s46 = load("sample-lower-scan.stl");
+  const m46 = detectTeeth(s46.positions, s46.indices, "lower", { occlusal: [0, 1, 0] });
+  const prep = m46.teeth.find((t) => t.stump);
+  check("a low preparation is found on the 46 fixture", !!prep && Math.hypot(prep.center[0] + 21.3, prep.center[2] + 28.3) < 4, prep ? prep.center.map((v) => v.toFixed(1)).join(",") : "none");
+  anchorJobTooth(m46, 46);
+  check("the appointment number 46 lands on that preparation, unconfirmed", m46.teeth.find((t) => t.fdi === 46) === prep && m46.jobToothConfirmed === false, m46.teeth.map((t) => t.fdi).join(" "));
+}
+
 console.log(failed ? `\n${failed} check(s) failed` : "\nall checks passed");
 process.exit(failed ? 1 : 0);

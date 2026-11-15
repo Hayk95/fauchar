@@ -125,7 +125,7 @@ test("the appointment page is the DentalDB project, arch and actions, and a toot
   const h = harness();
   try {
     assert.equal(h.view.querySelector(".db-project h2").textContent, "Project");
-    assert.equal(h.view.querySelector(".db-indications h2").textContent, "Job definition");
+    assert.equal(h.view.querySelector(".db-indications h2").textContent, "Indication and Materials");
     assert.equal(h.view.querySelector(".db-actions h2").textContent, "Actions");
     assert.equal(h.view.querySelector("dialog"), null);
     assert.equal(h.view.querySelectorAll(".db-tooth[aria-pressed='true']").length, 0);
@@ -134,7 +134,11 @@ test("the appointment page is the DentalDB project, arch and actions, and a toot
     h.click('[data-tooth="46"]');
     assert.equal(h.view.querySelector("#db-tooth-dialog-title").textContent, "Tooth 46");
     assert.equal(h.view.querySelectorAll(".db-dialog-columns > section").length, 3);
+    // Reference order: the restoration type opens the materials, the material opens options and shade.
+    assert.equal(h.view.querySelectorAll("[data-material]").length, 0);
+    assert.ok(h.view.querySelector('[data-action="apply-unit"]').disabled);
     h.click('[data-indication="crown"]');
+    assert.equal(h.view.querySelectorAll("[data-shade]").length, 0);
     h.click('[data-material="Zirconia"]');
     h.click('[data-shade="B2"]');
     h.click('[data-action="apply-unit"]');
@@ -153,7 +157,7 @@ test("DentalDB tooth dialog commits only on OK and leaves cancelled settings unt
     h.click('[data-tooth="21"]');
     assert.ok(h.view.querySelector("dialog[open]"));
     assert.equal(h.view.querySelectorAll(".db-dialog-columns > section").length, 3);
-    h.click('[data-material="PMMA"]');
+    h.click('[data-indication="crown"]'); h.click('[data-material="PMMA"]');
     const preop = h.view.querySelector('[data-option="preop"]');
     preop.checked = true; preop.dispatchEvent(new h.window.Event("change", { bubbles: true }));
     const wall = h.view.querySelector('[data-modal-parameter="minWall"]');
@@ -162,7 +166,7 @@ test("DentalDB tooth dialog commits only on OK and leaves cancelled settings unt
     assert.equal(JSON.stringify(h.intake.flow.job), before);
     assert.equal(h.view.querySelector("dialog"), null);
     h.click('[data-tooth="21"]');
-    h.click('[data-material="PMMA"]');
+    h.click('[data-indication="crown"]'); h.click('[data-material="PMMA"]');
     const option = h.view.querySelector('[data-option="preop"]');
     option.checked = true; option.dispatchEvent(new h.window.Event("change", { bubbles: true }));
     h.click('[data-action="apply-unit"]');
@@ -180,8 +184,10 @@ test("reference catalog includes every pictured group and shade/slider choices r
   try {
     h.click('[data-tooth="46"]');
     assert.equal(h.view.querySelectorAll('[data-indication]').length, 28);
-    assert.equal(h.view.querySelectorAll('[data-material]').length, 13);
     assert.ok(h.view.querySelector('[data-indication="barSegment"]').disabled);
+    h.click('[data-indication="crown"]');
+    assert.equal(h.view.querySelectorAll('[data-material]').length, 13);
+    h.click('[data-material="Zirconia"]');
     h.click('[data-shade="B2"]');
     const slider = h.view.querySelector('[data-modal-parameter="cementGap"]');
     slider.value = "0.09"; slider.dispatchEvent(new h.window.Event("input", { bubbles: true }));

@@ -1,5 +1,6 @@
 "use client";
 
+import BootScreen, { bootKind } from "./BootScreen";
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { workspaceHtml } from "@/content/workspaceHtml";
@@ -92,22 +93,7 @@ export default function WorkspaceClient() {
     };
   }, [allowed]);
 
-  if (!allowed) {
-    return (
-      <main
-        style={{
-          minHeight: "100vh",
-          display: "grid",
-          placeItems: "center",
-          background: "#0B1114",
-          color: "#8A929A",
-          fontFamily: "Inter, system-ui, sans-serif",
-        }}
-      >
-        <p>Checking account…</p>
-      </main>
-    );
-  }
+  if (!allowed) return <BootScreen kind={bootKind(pathname || "")} />;
 
   if (bootError) {
     return (
@@ -133,18 +119,11 @@ export default function WorkspaceClient() {
     );
   }
 
-  const path = pathname || "";
-  const intake = /\/cases\/new\/?$/.test(path);
-  const dentalCase = /\/workspace\/case\//.test(path);
+  const kind = bootKind(pathname || "");
+  const background = kind === "intake" ? "#f7f7f8" : kind === "case" ? "#4f3b64" : "#0B1114";
   return (
-    <div
-      ref={rootRef}
-      id="workspace-root"
-      style={{ minHeight: "100vh", background: intake || dentalCase ? "#e2e2e5" : "#0B1114", color: intake || dentalCase ? "#6d6277" : "#8A929A" }}
-    >
-      <p style={{ margin: 0, minHeight: "100vh", display: "grid", placeItems: "center", fontFamily: "Arial, sans-serif" }}>
-        {intake ? "Opening the appointment…" : dentalCase ? "Opening case…" : "Loading workspace…"}
-      </p>
+    <div ref={rootRef} id="workspace-root" style={{ minHeight: "100vh", background }}>
+      <BootScreen kind={kind} />
     </div>
   );
 }
