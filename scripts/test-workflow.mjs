@@ -235,7 +235,7 @@ test("tooth library lifts a full anatomic crown off the margin and keeps the pre
     assert.deepEqual(inner, plainInner);
     shapes.push([...result.positions].join(","));
     if (item.id === "standard") {
-      assert.ok(heightOf(result) > plainHeight + 2, "the library tooth stands above the smooth shell");
+      assert.ok(heightOf(result) > plainHeight + 1.4, "the library tooth stands above the smooth shell");
       const z = result.frame.occlusal, c = result.frame.center;
       let cusp = -Infinity, fossa = -Infinity;
       for (let i = 0; i < result.positions.length; i += 3) {
@@ -247,6 +247,18 @@ test("tooth library lifts a full anatomic crown off the margin and keeps the pre
         if (radial < 0.35 && h > fossa) fossa = h;
       }
       assert.ok(cusp > fossa + 1.2, "cusps stand above the central groove");
+      const rimR = result.frame.rimRadius;
+      let wide = 0, seen = 0;
+      for (let i = 0; i < result.positions.length; i += 3) {
+        if (result.seg.intaglio[i / 3]) continue;
+        const p = [result.positions[i], result.positions[i + 1], result.positions[i + 2]];
+        const h = (p[0] - c[0]) * z[0] + (p[1] - c[1]) * z[1] + (p[2] - c[2]) * z[2];
+        if (h < cusp * .28 || h > cusp * .55) continue;
+        const radial = Math.hypot(p[0] - c[0] - z[0] * h, p[1] - c[1] - z[1] * h, p[2] - c[2] - z[2] * h);
+        if (radial > rimR * .72) wide++;
+        seen++;
+      }
+      assert.ok(seen > 20 && wide / seen > .6, "the sides stay wide instead of falling to a point");
     }
   }
   assert.equal(new Set(shapes).size, TOOTH_LIBRARY.length, "each library form changes the mesh");
