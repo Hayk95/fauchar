@@ -17,7 +17,7 @@
     "test:workflow": "node --test scripts/test-workflow.mjs",
     "test:cad": "node scripts/test-cad.mjs",
     "test:teeth": "node scripts/test-teeth.mjs",
-    "test:mesh": "node --test scripts/test-mesh-quality.mjs"
+    "test:mesh": "node --test scripts/test-mesh-quality.mjs scripts/test-mesh-cut.mjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

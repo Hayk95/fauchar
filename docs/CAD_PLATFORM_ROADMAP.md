@@ -10,8 +10,9 @@ editing behavior working while adding one tested capability at a time. Each
 stage has an input, editable result, persistence behavior and export acceptance
 criteria. Commit working increments and record their verification below.
 
-The present increment adds mesh topology inspection, component STL extraction
-and reversible restoration face cleanup. It uses the existing worker transport,
+Stage 1A adds mesh topology inspection, component STL extraction
+and reversible restoration face cleanup. Stage 1B begins with editable connected-part
+copies and uncapped axis-plane cuts. It uses the existing worker transport,
 editor history and scene persistence. It introduces no runtime dependency.
 
 ## Audited repository baseline
@@ -115,6 +116,59 @@ Stage order can be adjusted when representative cases or manufacturer libraries
 become available. The next stage starts from the last accepted state, and
 regression checks for previous stages remain part of verification.
 
+## Stage 1B increment — editable mesh copies and plane cuts
+
+Expert tools → Mesh → Inspect → select a connected part → Create editable part
+copy. The new independent mesh can be selected, moved, sculpted, inspected,
+cleaned, saved/reopened, removed and exported individually through existing tools.
+The source scan/restoration and protected crown segmentation are untouched.
+
+For a plane cut, choose X/Y/Z, enter a mesh-space plane coordinate in millimetres,
+and choose the side to keep. Create cut working copy clips each intersected triangle
+at the actual plane. Shared source edges reuse intersection vertices and retained
+triangles keep their winding. Both computation and buffer transfer use the existing
+worker. Empty results, invalid inputs, output budgets and concurrent source edits
+fail explicitly. A plane keeping the entire mesh does not create a redundant copy.
+
+Working copies use an additive `kind: "mesh"` record in the existing version-1
+object collection, with source object ID and operation settings. Creation/removal
+use existing object history. Copies have no inferred crown/intaglio classification
+and are excluded from combined restoration/voxel-union exports; individual STL
+export remains available. A plane cut leaves an open boundary: hole capping,
+freehand/polygon selection, orientation repair and replacement of a source scan
+are not included. The existing Float32 scene reopen convention is unchanged;
+the standalone clipping kernel preserves Float64 input arrays.
+
+Reference: https://wiki.exocad.com/wiki/index.php/3D_Data_Editor
+Publicly described divide/cut workflows motivate editable separate meshes. This
+increment implements connected-part copies and axis-plane clipping, not the
+reference product's complete polygon-selection toolset.
+
+## Stage 1B increment — editable parts and plane cuts
+
+Implemented as a bounded subset of Stage 1B; lasso selection, arbitrary clean-edge
+polygons, hole filling and orientation repair remain planned.
+
+- Expert tools → Mesh → Inspect → choose part → Create editable part copy.
+- Plane cut: choose X/Y/Z in mesh coordinates, enter the coordinate and keep the
+  above/below half. Crossing triangles are split along the plane. Shared original
+  edges share new intersection vertices; original face winding is retained.
+- Both operations create independent `kind: mesh` working objects in the same
+  workspace. Existing scans/crowns and their margins/intaglio labels are not
+  replaced. Copies have ordinary freeform/transform tools, an original geometry
+  baseline, Undo/Redo and existing scene persistence. Source/operation metadata
+  stays with the object. The source stays visible; use existing object visibility
+  controls to inspect the copy separately.
+- Copies are excluded from combined restoration-shell and merged manufacturing
+  exports. Export selected mesh explicitly for their individual STL.
+- Cuts are **uncapped**; the panel states that the boundary stays open. No fitted
+  inner surface, automatic crown classification or manufacturing-ready claim is
+  applied to working meshes. Use inspection to check each result.
+- Empty/no-op cuts and changed sources are rejected. Input/output budgets remain
+  750,000 triangles / 2,000,000 vertices. Existing scene reopen uses Float32
+  coordinates; this increment does not introduce a new precision schema.
+- Public workflow reference: https://wiki.exocad.com/wiki/index.php/3D_Data_Editor
+
 ## Architecture decisions
 
 ### Retain for ordinary incremental work
@@ -199,5 +253,12 @@ https://exocad.com/our-products/exocad-dentalcad/trusmile-module
   application integration remain unverified; this is not a browser QA pass.
 - The existing lockfile lacked transitive optional dependency entries and failed
   `npm ci`. Regenerating it repaired the lock without adding runtime dependencies.
+- Stage 1B: targeted mesh tests pass 14/14, including a real sample crown,
+  actual worker transport, DOM panel bindings, source immutability, stale-source
+  rejection, Undo/Redo, individual/combined export separation and save/reopen.
+  Full `npm test`, `npm run build` and `git diff --check` passed.
+  DOM bindings were checked with the actual panel in linkedom. Interactive WebGL
+  rendering/download QA remains pending because the available cloud browser
+  previously reported WebGL unavailable; no new visual verification is claimed.
 - Remaining stages are planned. Stage 1A does not certify fit, self-intersection
   freedom or manufacturing readiness.
