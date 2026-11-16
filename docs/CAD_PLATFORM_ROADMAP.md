@@ -169,6 +169,39 @@ polygons, hole filling and orientation repair remain planned.
   coordinates; this increment does not introduce a new precision schema.
 - Public workflow reference: https://wiki.exocad.com/wiki/index.php/3D_Data_Editor
 
+## Stage 1B increment — explicit planar hole repair
+
+Mesh → Find open boundaries returns directed boundary loops and shows open edges
+in orange and the selected loop in green in the existing WebGL line layer.
+Only unclassified working mesh copies can be modified. Fitted crowns, other
+restoration kinds, source scans and any object carrying protected segmentation
+are blocked at both the action and geometry-application entry points.
+
+A selected simple planar loop is capped with ear-clipped triangles using existing
+boundary vertices. Coordinates and all original face IDs remain unchanged; no
+center fan, smoothing, welding or anatomy inference is performed. Limits are
+128 boundary vertices, a 10 mm bounding-box diagonal, and 0.00001 mm deviation
+from the calculated plane. Curved, overlapping, ambiguous or oversized boundaries
+are rejected with a reason. Only the selected loop is filled.
+
+The worker checks nearby source geometry for plane/cap obstruction (including
+coplanar overlap), with a 200,000 projected comparison budget. It then checks
+that boundary edges decrease by exactly the selected loop length and that no
+non-manifold edges, winding conflicts, duplicate or zero-area faces are present.
+These local/tolerance-based checks do not replace general self-intersection or
+clinical/manufacturing validation. Source geometry remains unchanged on failure.
+
+Fill is one topology Undo/Redo step, preserves existing vertex-based protections
+and measurement face references, saves/reopens with the existing scene format,
+and exports through the individual working-mesh STL action. Boundary overlays
+invalidate when geometry changes, the target is hidden/changed or another tool
+is selected. Preview is limited to 100,000 edges, 1,000 loops and 4,096 vertices
+per displayed loop; omitted/oversized data is reported. Protected restoration
+exports and bridge readiness exclude working mesh copies.
+
+Next bridge architecture proposal: `docs/BRIDGE_MULTI_UNIT_PROPOSAL.md`.
+It is a reviewable proposal only; multi-unit ownership changes require approval.
+
 ## Architecture decisions
 
 ### Retain for ordinary incremental work
@@ -262,3 +295,11 @@ https://exocad.com/our-products/exocad-dentalcad/trusmile-module
   previously reported WebGL unavailable; no new visual verification is claimed.
 - Remaining stages are planned. Stage 1A does not certify fit, self-intersection
   freedom or manufacturing readiness.
+
+- Planar repair targeted verification: 23 mesh tests passed, including concave
+  boundaries, multiple loops, non-planar/ambiguous/oversized rejection, local
+  obstruction rejection, real sample-crown geometry, actual worker protocol,
+  protected-source behavior, overlay coordinates, Undo/Redo and save/reopen.
+  Full `npm test`, `npm run build` and `git diff --check` passed. WebGL rendering
+  still requires verification in a WebGL-capable browser; DOM/line-buffer tests
+  are not claimed as a visual browser pass.
