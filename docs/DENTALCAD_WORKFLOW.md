@@ -62,7 +62,7 @@ merely because a matching panel exists.
 | Tooth identification | Existing geometric arch/FDI algorithm; manual corrections; not trained AI segmentation. |
 | Margins | Existing detection and editing; new workflow prerequisite checks. |
 | Insertion and undercut maps | Existing calculations exposed as a dedicated stage; full directional undercut block-out absent. |
-| Crown bottom and cement gap | New scan-based starter plus existing intaglio spacing edits. Multiple painted gap zones, detailed border modes and milling-bur compensation absent. |
+| Crown bottom and cement gap | Scan-based intaglio plus intaglio spacing edits. Undercut block-out along the insertion axis (angle, untouchable zone near the margin) and milling-tool compensation (ball or bullnose, per meridian in the height/radius plane) in `lib/client/cad/intaglio.js`, applied when a library tooth is placed. Painted gap zones and the five-parameter border profile are still absent. |
 | Crown/tooth anatomy | One original STL per adult tooth (FDI 11–48) is fitted to the margin, with Standard, Youthful, Broad, Square, Tapered and Worn variations. Exocad and other licensed manufacturer libraries are not included. |
 | Placement | Existing per-object transforms; multi-tooth chain placement/symmetry absent. |
 | Freeforming | Existing geometry brushes, protected margin/intaglio, anatomy sliders and history. |

@@ -502,3 +502,127 @@ test("Find margin measures the preparation's own axis and lands on the exocad ma
   assert.ok(d.reduce((s, x) => s + x, 0) / d.length < 0.1, `mean ${d.reduce((s, x) => s + x, 0) / d.length}`);
   assert.ok(d[d.length - 1] < 0.35, `max ${d[d.length - 1]}`);
 });
+
+/* ---- inside of the crown: undercut block-out and milling-tool compensation */
+const revolve = (profile, n = 120) => {
+  const pos = [], idx = [];
+  for (const [r, h] of profile) for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2; pos.push(r * Math.cos(a), r * Math.sin(a), h); }
+  for (let p = 0; p + 1 < profile.length; p++) for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n, a = p * n + i, b = p * n + j, c = (p + 1) * n + j, d = (p + 1) * n + i;
+    idx.push(a, b, c, a, c, d);
+  }
+  const top = pos.length / 3; pos.push(0, 0, profile[profile.length - 1][1]);
+  const last = (profile.length - 1) * n;
+  for (let i = 0; i < n; i++) idx.push(last + i, last + (i + 1) % n, top);
+  return { positions: Float32Array.from(pos), indices: Uint32Array.from(idx) };
+};
+const dieMargin = r => Array.from({ length: 48 }, (_, i) => { const a = (i / 48) * Math.PI * 2; return [r * Math.cos(a), r * Math.sin(a), 0]; });
+
+async function shapedRings(scan, margin, options) {
+  const { buildIntaglioRings, shapeIntaglio } = await import("../lib/client/cad/intaglio.js");
+  const { preparationFrame } = await import("../lib/client/cad/crown-builder.js");
+  const { z, center, loop, sample } = preparationFrame({ ...scan, margin, axis: [0, 0, 1], segments: 96 });
+  const vertices = [], triangles = [], faceIn = [];
+  const push = p => { const id = vertices.length / 3; vertices.push(p[0], p[1], p[2]); return id; };
+  const addTri = (a, b, c, inside) => { triangles.push(a, b, c); faceIn.push(inside ? 1 : 0); };
+  const built = buildIntaglioRings({ loop, center, z, sample, rings: 24, segments: 96, gap: 0.06, marginGap: 0.02, push, addTri });
+  const report = shapeIntaglio({ vertices, ...built, loop, center, z, scan: new BVH(scan.positions, scan.indices), gap: 0.06, marginGap: 0.02, options });
+  const radius = (r, i) => { const id = built.inner[r][i]; return Math.hypot(vertices[id * 3], vertices[id * 3 + 1]); };
+  const height = (r, i) => vertices[built.inner[r][i] * 3 + 2];
+  const minRing = r => Math.min(...Array.from({ length: 96 }, (_, i) => radius(r, i)));
+  return { report, radius, height, minRing, loop };
+}
+
+test("block-out opens the intaglio over an undercut die, with angle and untouchable zone", async () => {
+  // Die of revolution: margin r=4 at h=0, bulges to 4.4 at h=1, tapers to 2.6, flat top; gingiva flares below.
+  const die = revolve([[6, -1.5], [4, 0], [4.25, 0.4], [4.4, 1], [4.3, 1.6], [3.8, 2.5], [3.2, 4], [2.6, 5.5], [1.2, 5.6]]);
+  const margin = dieMargin(4);
+  const off = await shapedRings(die, margin, { blockout: false, toolCompensation: false });
+  assert.equal(off.report.blockout, null);
+  assert.ok(Math.abs(off.minRing(0) - 4.02) < 0.01, `untouched edge ${off.minRing(0)}`);
+  // Sampled from above, the wall jumps from the margin straight to the taper: it would cut through the bulge.
+  assert.ok(off.height(1, 0) > 2 && off.radius(1, 0) < 4, `ring 1 at h ${off.height(1, 0)} r ${off.radius(1, 0)}`);
+
+  const on = await shapedRings(die, margin, { blockout: true, blockoutAngle: 0, blockoutZone: 0, toolCompensation: false });
+  assert.ok(on.report.blockout.maxDepth > 0.35 && on.report.blockout.maxDepth < 0.5, `depth ${on.report.blockout.maxDepth}`);
+  assert.ok(on.report.blockout.fraction > 0.95);
+  assert.ok(on.minRing(0) >= 4.41, `edge opened to the bulge ${on.minRing(0)}`);
+  assert.ok(Math.hypot(on.loop[0][0], on.loop[0][1]) > 4.39, "the margin loop follows the opened edge");
+  assert.ok(on.radius(1, 0) < 4 && Math.abs(on.radius(1, 0) - off.radius(1, 0)) < 0.05, "the taper above the bulge is untouched");
+
+  const angled = await shapedRings(die, margin, { blockout: true, blockoutAngle: 5, blockoutZone: 0, toolCompensation: false });
+  assert.ok(angled.minRing(0) >= 4.41 + Math.tan((5 * Math.PI) / 180) * 0.95, `flared edge ${angled.minRing(0)}`);
+
+  const zoned = await shapedRings(die, margin, { blockout: true, blockoutAngle: 0, blockoutZone: 0.5, toolCompensation: false });
+  assert.ok(Math.abs(zoned.minRing(0) - 4.02) < 0.01, `zone keeps the edge on the margin ${zoned.minRing(0)}`);
+  assert.ok(zoned.report.blockout.maxDepth < on.report.blockout.maxDepth);
+
+  const { intaglioOptions } = await import("../lib/client/cad/intaglio.js");
+  assert.throws(() => intaglioOptions({ toolDiameter: 5 }), /range/);
+  assert.throws(() => intaglioOptions({ blockoutAngle: 30 }), /range/);
+});
+
+test("milling relief widens the sharp internal corner a ball tool cannot reach and leaves the wall alone", async () => {
+  // Tapered die with a sharp axio-occlusal line angle at (2.6, 4.5).
+  const die = revolve([[6, -1.5], [3, 0], [2.6, 4.5], [0.6, 4.5]]);
+  const margin = dieMargin(3);
+  const off = await shapedRings(die, margin, { blockout: true, toolCompensation: false });
+  const on = await shapedRings(die, margin, { blockout: true, toolCompensation: true, toolDiameter: 1 });
+  assert.ok(on.report.tool.maxRelief > 0.03 && on.report.tool.maxRelief <= 0.5, `relief ${on.report.tool.maxRelief}`);
+  // Rings 1–3 lie on the taper; ring 3 sits just under the corner and must open, ring 1 far below must not.
+  assert.ok(on.height(3, 0) > 3.9 && on.height(3, 0) < 4.6, `ring 3 height ${on.height(3, 0)}`);
+  assert.ok(on.radius(3, 0) - off.radius(3, 0) > 0.02, `corner relief ${on.radius(3, 0) - off.radius(3, 0)}`);
+  assert.ok(on.height(1, 0) < 2 && Math.abs(on.radius(1, 0) - off.radius(1, 0)) < 0.005, "wall far from the corner unchanged");
+  // A vertex on the flat top at the same height as the corner is not the envelope and stays put.
+  assert.ok(Math.abs(on.radius(6, 0) - off.radius(6, 0)) < 1e-6);
+  // A chamfer die that is wider just above the drawn margin: relief must not fold the inside over the edge.
+  const lip = revolve([[6, -1.5], [3, 0], [3.15, 0.2], [3.1, 0.6], [2.6, 4.5], [0.6, 4.5]]);
+  const lipped = await shapedRings(lip, margin, { blockout: true, toolCompensation: true, toolDiameter: 1 });
+  for (let i = 0; i < 96; i += 7) {
+    let widest = lipped.radius(0, i);
+    for (let r = 1; r < lipped.rings; r++) { assert.ok(lipped.radius(r, i) <= widest + 0.05, `fold at ring ${r}: ${lipped.radius(r, i)} over ${widest}`); widest = Math.max(widest, lipped.radius(r, i)); }
+  }
+  assert.ok(lipped.report.tool.maxRelief < 0.5, `lip relief ${lipped.report.tool.maxRelief}`);
+  const bull = await shapedRings(die, margin, { blockout: true, toolCompensation: true, toolDiameter: 1, bullnose: true, toolFlat: 60 });
+  assert.ok(bull.report.tool.maxRelief > 0 && bull.report.tool.maxRelief < on.report.tool.maxRelief, `bullnose relief ${bull.report.tool.maxRelief} vs ball ${on.report.tool.maxRelief}`);
+});
+
+test("library tooth 22 keeps its fit on the real scan with block-out and milling relief on", async () => {
+  const read = name => { const b = readFileSync(new URL(name, import.meta.url)); return parseBinarySTL(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)); };
+  const shell = read("../public/assets/teeth/22.stl");
+  const plain = runKernelTask("crown-stl", { ...payload, shell, libFrame: null, blockout: false, toolCompensation: false });
+  const shaped = runKernelTask("crown-stl", { ...payload, shell, libFrame: null, blockout: true, toolCompensation: true, toolDiameter: 1 });
+  assert.equal(shaped.stats.closed, true); assert.equal(shaped.stats.invalid, 0);
+  assert.ok(shaped.source.blockout && Number.isFinite(shaped.source.blockout.maxDepth));
+  assert.ok(shaped.source.tool && Number.isFinite(shaped.source.tool.maxRelief));
+  assert.ok(shaped.source.blockout.maxDepth < 0.6, `real die block-out ${shaped.source.blockout.maxDepth}`);
+  assert.ok(Math.abs(shaped.stats.volume - plain.stats.volume) / plain.stats.volume < 0.08, `volume ${plain.stats.volume} → ${shaped.stats.volume}`);
+  const mesh = ops.makeMesh(shaped.positions, shaped.indices);
+  const thick = ops.thicknessMap(mesh, shaped.seg, new BVH(shaped.positions, shaped.indices, shaped.seg.inTris));
+  assert.ok(thick.min > 0.75, `wall ${thick.min}`);
+  assert.throws(() => runKernelTask("crown-stl", { ...payload, shell, libFrame: null, toolDiameter: 9 }), /range/);
+  // On the real die no meridian of the inside may fold outward over the rings below it.
+  const real = await shapedRings(scan, payload.margin, { blockout: true, toolCompensation: true, toolDiameter: 1 });
+  let folds = 0;
+  for (let i = 0; i < 96; i++) { let widest = real.radius(0, i); for (let r = 1; r < real.rings; r++) { if (real.radius(r, i) > widest + 0.05) folds++; widest = Math.max(widest, real.radius(r, i)); } }
+  assert.equal(folds, 0, `${folds} folded ring vertices`);
+});
+
+test("a hand-placed tooth fitted with block-out and milling relief never grows spikes below its margin", async () => {
+  const read = name => { const b = readFileSync(new URL(name, import.meta.url)); return parseBinarySTL(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)); };
+  const shell = read("../public/assets/teeth/22.stl");
+  const placed = runKernelTask("tooth-place", { ...payload, shell, libFrame: null, arch: null });
+  const z = V.norm(payload.axis), center = V.mul(payload.margin.reduce((a, p) => V.add(a, p), [0, 0, 0]), 1 / payload.margin.length);
+  for (const opts of [{ blockout: false, toolCompensation: false }, { blockout: true, toolCompensation: true, toolDiameter: 1 }]) {
+    const r = runKernelTask("crown-stl", { ...payload, shell, libFrame: null, arch: null, placedWorld: placed.positions, placedFrame: placed.frame, ...opts });
+    const at = v => [r.positions[v * 3], r.positions[v * 3 + 1], r.positions[v * 3 + 2]];
+    const segments = r.seg.rimLoop.length, rimH = Array.from(r.seg.rimLoop, v => V.dot(V.sub(at(v), center), z));
+    let below = 0;
+    for (let v = 0; v < r.positions.length / 3; v++) {
+      if (r.seg.intaglio[v]) continue;
+      if (V.dot(V.sub(at(v), center), z) - rimH[v % segments] < -0.2) below++;
+    }
+    assert.equal(below, 0, `${below} outer vertices below the margin with ${JSON.stringify(opts)}`);
+    assert.equal(r.stats.closed, true);
+  }
+});
