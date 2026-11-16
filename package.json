@@ -11,12 +11,13 @@
     "start": "next start",
     "start:api": "node server/index.js",
     "lint": "eslint",
-    "test": "npm run test:intake && npm run test:margin && npm run test:workflow && npm run test:cad && npm run test:teeth",
+    "test": "npm run test:intake && npm run test:margin && npm run test:workflow && npm run test:cad && npm run test:teeth && npm run test:mesh",
     "test:intake": "node --test scripts/test-intake.mjs",
     "test:margin": "node --test scripts/test-margin.mjs",
     "test:workflow": "node --test scripts/test-workflow.mjs",
     "test:cad": "node scripts/test-cad.mjs",
-    "test:teeth": "node scripts/test-teeth.mjs"
+    "test:teeth": "node scripts/test-teeth.mjs",
+    "test:mesh": "node --test scripts/test-mesh-quality.mjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
