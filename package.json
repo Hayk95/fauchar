@@ -10,7 +10,14 @@
     "build": "next build --turbopack",
     "start": "next start",
     "start:api": "node server/index.js",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "npm run test:intake && npm run test:margin && npm run test:workflow && npm run test:cad && npm run test:teeth && npm run test:mesh",
+    "test:intake": "node --test scripts/test-intake.mjs",
+    "test:margin": "node --test scripts/test-margin.mjs",
+    "test:workflow": "node --test scripts/test-workflow.mjs",
+    "test:cad": "node scripts/test-cad.mjs",
+    "test:teeth": "node scripts/test-teeth.mjs",
+    "test:mesh": "node --test scripts/test-mesh-quality.mjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -35,6 +42,7 @@
     "concurrently": "^10.0.6",
     "eslint": "^9",
     "eslint-config-next": "15.5.28",
+    "linkedom": "^0.18.15",
     "typescript": "^5"
   }
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@/styles/app.css";
+import "@/styles/dentalcad.css";
 
 export const metadata: Metadata = {
   title: "Workspace",

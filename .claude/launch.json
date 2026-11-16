@@ -1,0 +1,42 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "fauchar",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8080"
+      ],
+      "port": 8080
+    },
+    {
+      "name": "web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev:web"
+      ],
+      "port": 3000
+    },
+    {
+      "name": "mock-api",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "/private/tmp/claude-501/-Users-haykmaruqyan--claude-spares-spare-xeyI0R/dd9a75fa-3ac8-4342-98ca-c96baff21e27/scratchpad/mock-api.mjs",
+        "4001"
+      ],
+      "port": 4001
+    },
+    {
+      "name": "web-mock",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "NEXT_PUBLIC_API_URL=http://localhost:4001 exec ./node_modules/.bin/next dev -p 3001"
+      ],
+      "port": 3001
+    }
+  ]
+}

@@ -1,24 +1,12 @@
 import { Suspense } from "react";
 import WorkspaceClient from "@/components/workspace/WorkspaceClient";
+import BootScreen, { bootKind } from "@/components/workspace/BootScreen";
 
-export default function WorkspacePage() {
+export default async function WorkspacePage({ params }: { params: Promise<{ slug?: string[] }> }) {
+  const { slug = [] } = await params;
+  const kind = bootKind(`/workspace/${slug.join("/")}`);
   return (
-    <Suspense
-      fallback={
-        <main
-          style={{
-            minHeight: "100vh",
-            display: "grid",
-            placeItems: "center",
-            background: "#0B1114",
-            color: "#8A929A",
-            fontFamily: "Inter, system-ui, sans-serif",
-          }}
-        >
-          <p>Loading workspace…</p>
-        </main>
-      }
-    >
+    <Suspense fallback={<BootScreen kind={kind} />}>
       <WorkspaceClient />
     </Suspense>
   );

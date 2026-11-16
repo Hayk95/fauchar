@@ -1,7 +1,8 @@
 "use client";
 
+import BootScreen, { bootKind } from "./BootScreen";
 import { useEffect, useRef, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { workspaceHtml } from "@/content/workspaceHtml";
 import { clearSession, getStoredUser, me } from "@/lib/api";
 import { initViewer } from "@/lib/client/viewer";
@@ -10,7 +11,6 @@ import { initWorkspaceApp } from "@/lib/client/workspace-app";
 export default function WorkspaceClient() {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const bootedRef = useRef(false);
   const [allowed, setAllowed] = useState(false);
@@ -44,22 +44,38 @@ export default function WorkspaceClient() {
     const root = rootRef.current;
     if (!root || bootedRef.current) return;
 
+    const path = window.location.pathname;
+    const intake = /\/cases\/new\/?$/.test(path);
+    const dentalCase = /\/workspace\/case\//.test(path);
+    if (intake) document.documentElement.dataset.dentalIntake = "1";
+    else delete document.documentElement.dataset.dentalIntake;
+    document.documentElement.toggleAttribute("data-dental-session", dentalCase);
+
     root.innerHTML = workspaceHtml;
+    const view = root.querySelector("#view");
+    if (view) {
+      view.innerHTML = intake
+        ? `<div class="page job-intake dentaldb-intake"><header class="db-application-bar"><span class="db-brand">FAUCHAR</span><span>Dental workspace</span></header><p class="db-chart-help">Opening the appointment…</p></div>`
+        : dentalCase
+          ? `<div class="case-view dental-case"><div class="cad dental-cad"><div class="vp"><div class="vp-overlay"><h3>Opening case</h3><p>Loading the saved design…</p></div></div></div></div>`
+          : `<div class="page"><p class="muted">Loading workspace…</p></div>`;
+    }
     delete document.documentElement.dataset.faucharWorkspace;
     document.documentElement.classList.add("js");
     bootedRef.current = true;
 
+    let boot: { done?: Promise<void>; dispose?: () => void } | undefined;
     try {
       if (!root.querySelector("#view")) {
         throw new Error("Workspace shell failed to mount.");
       }
-      // Clear legacy hash routes if present.
       if (window.location.hash.startsWith("#/")) {
         const legacy = window.location.hash.slice(1);
         window.history.replaceState(null, "", `/workspace${legacy === "/dashboard" ? "" : legacy}`);
       }
       initViewer();
-      initWorkspaceApp();
+      boot = initWorkspaceApp();
+      Promise.resolve(boot?.done).catch((error) => setBootError(error?.message || "Workspace failed to start."));
     } catch (err) {
       console.error(err);
       setBootError((err as Error).message || "Workspace failed to start.");
@@ -67,34 +83,17 @@ export default function WorkspaceClient() {
     }
 
     return () => {
+      boot?.dispose?.();
       delete document.documentElement.dataset.faucharWorkspace;
+      delete document.documentElement.dataset.dentalSession;
+      document.documentElement.removeAttribute("data-dental-session");
+      delete document.documentElement.dataset.dentalIntake;
       bootedRef.current = false;
       root.innerHTML = "";
     };
   }, [allowed]);
 
-  // Keep SPA router in sync when Next.js path changes (browser back/forward via Next).
-  useEffect(() => {
-    if (!allowed || !bootedRef.current) return;
-    window.dispatchEvent(new PopStateEvent("popstate"));
-  }, [allowed, pathname, searchParams]);
-
-  if (!allowed) {
-    return (
-      <main
-        style={{
-          minHeight: "100vh",
-          display: "grid",
-          placeItems: "center",
-          background: "#0B1114",
-          color: "#8A929A",
-          fontFamily: "Inter, system-ui, sans-serif",
-        }}
-      >
-        <p>Checking account…</p>
-      </main>
-    );
-  }
+  if (!allowed) return <BootScreen kind={bootKind(pathname || "")} />;
 
   if (bootError) {
     return (
@@ -120,5 +119,11 @@ export default function WorkspaceClient() {
     );
   }
 
-  return <div ref={rootRef} id="workspace-root" />;
+  const kind = bootKind(pathname || "");
+  const background = kind === "intake" || kind === "case" ? "#0d1015" : "#0B1114";
+  return (
+    <div ref={rootRef} id="workspace-root" style={{ minHeight: "100vh", background }}>
+      <BootScreen kind={kind} />
+    </div>
+  );
 }

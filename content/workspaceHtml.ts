@@ -41,6 +41,12 @@ export const workspaceHtml = `<svg class="sprite" aria-hidden="true" focusable="
     <symbol id="w-restore" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v3.7h3.7M12 8v4l2.5 1.5"/></symbol>
     <symbol id="w-layers" viewBox="0 0 24 24"><path d="m12 3.5 8.5 4.5-8.5 4.5L3.5 8z"/><path d="m3.5 12 8.5 4.5 8.5-4.5M3.5 16l8.5 4.5 8.5-4.5"/></symbol>
     <symbol id="w-panel" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="1.5"/><path d="M14.5 4.5v15"/></symbol>
+    <symbol id="w-save" viewBox="0 0 24 24"><path d="M5.5 3.5h10l4 4v11a2 2 0 0 1-2 2h-12a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2z"/><path d="M7.5 3.5v5h8v-5M7.5 20.5v-6.5h9v6.5"/></symbol>
+    <symbol id="w-mode" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2.2"/><circle cx="8" cy="17" r="2.2"/></symbol>
+    <symbol id="w-tools" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.3 5.3l-5.6 5.6a1.8 1.8 0 0 0 2.6 2.6l5.6-5.6a4 4 0 0 0 5.3-5.3l-2.5 2.5-2.4-.2-.2-2.4z"/></symbol>
+    <symbol id="w-ruler" viewBox="0 0 24 24"><path d="M3.5 15.5 15.5 3.5l5 5-12 12z"/><path d="m7 12 2 2M10 9l1.5 1.5M13 6l2 2"/></symbol>
+    <symbol id="w-cut" viewBox="0 0 24 24"><path d="M12 2.75 20.25 7.5v9L12 21.25 3.75 16.5v-9z"/><path d="M2.5 13.5h19" stroke-dasharray="2 2"/></symbol>
+    <symbol id="w-quality" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17"/><path d="M12 6.5a5.5 5.5 0 0 1 0 11" stroke-width="4" stroke-opacity=".45"/></symbol>
     <symbol id="w-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
   </svg>
 
@@ -175,7 +181,7 @@ export const workspaceHtml = `<svg class="sprite" aria-hidden="true" focusable="
         <div><dt><kbd>W</kbd></dt><dd>Toggle wireframe</dd></div>
         <div><dt><kbd>G</kbd></dt><dd>Toggle grid</dd></div>
         <div><dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></dt><dd>Toggle upper jaw, lower jaw, restoration</dd></div>
-        <div><dt>Drag · Right-drag · Wheel</dt><dd>Rotate · Pan · Zoom</dd></div>
+        <div><dt>Right-drag · Middle-drag · Wheel</dt><dd>Rotate · Pan · Zoom</dd></div>
         <div class="shortcuts-sep"><dt>Design tools</dt><dd></dd></div>
         <div><dt><kbd>Q</kbd> <kbd>T</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>M</kbd> <kbd>O</kbd></dt><dd>Teeth, Move, Anatomy, Sculpt, Margin, Occlusion</dd></div>
         <div><dt><kbd>C</kbd> <kbd>D</kbd> <kbd>B</kbd> <kbd>E</kbd> <kbd>V</kbd></dt><dd>Contacts, Crown, Bridge, Measure, View</dd></div>
